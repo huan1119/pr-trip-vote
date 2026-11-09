@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11/19 海边骑马投票 · 波多黎各</title>
+<meta name="description" content="先看风景再投票：每条骑马路线的照片、路线和价格，选路线、时段和票种，页面自动算出买几张票。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="11/19 海边骑马投票">
+<meta property="og:description" content="先看风景再投票：选路线、时段、拼团还是包场，页面自动算票。">
+<meta property="og:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Montones-01.jpg/960px-Montones-01.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://thumb.wikimedia.org">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Same tokens as the main trip page, so the two pages read as one notebook.
+     This page leads with photos: scenery first, then the vote, then the ticket count. */
+  --bg:#ECEEEA;
+  --surface:#FAFAF7;
+  --ink:#1C2630;
+  --muted:#5B6670;
+  --line:#D2D8D2;
+  --accent:#34577A;
+  --yes:#2E7468;
+  --no:#B0533A;
+  --rec:#94741F;
+  --accent-soft:#DDE5ED;
+  --yes-soft:#DBEAE6;
+  --no-soft:#F2E1DA;
+  --rec-soft:#EFE6CF;
+  --on-strong:#FFFFFF;
+  --display:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10171E; --surface:#17212A; --ink:#E3E7E4; --muted:#9BA7B0; --line:#2A3743;
+    --accent:#93B6D8; --yes:#71C3B4; --no:#E7987E; --rec:#D8B865;
+    --accent-soft:#1D2D3C; --yes-soft:#16302C; --no-soft:#382320; --rec-soft:#332B18;
+    --on-strong:#0E161C;
+    color-scheme:dark;
+  }
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:var(--accent);text-underline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 72px}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+[hidden]{display:none !important}
+
+/* hero: one big photo, title on it */
+.hero{position:relative;margin:0 -16px;background:#2a3a48;overflow:hidden}
+.hero img{display:block;width:100%;height:min(66vw,420px);object-fit:cover}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,14,20,.82) 0%,rgba(8,14,20,.35) 42%,rgba(8,14,20,0) 68%)}
+.hero .txt{position:absolute;left:16px;right:16px;bottom:14px;color:#fff}
+.hero .eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:rgba(255,255,255,.86)}
+.hero h1{font-size:clamp(27px,7.2vw,40px);line-height:1.15;margin:4px 0 0;text-wrap:balance;color:#fff}
+.hero .nw{display:inline-block}
+.hero .cr{position:absolute;top:8px;right:8px;font-size:10.5px;line-height:1.5;color:rgba(255,255,255,.9);background:rgba(0,0,0,.38);padding:1px 7px;border-radius:6px;text-decoration:none}
+@media (min-width:760px){.hero{margin:18px 0 0;border-radius:16px}}
+.lede{color:var(--muted);margin:14px 0 14px;max-width:40em}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.fact .k{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--accent)}
+.fact.due .k{color:var(--no)}
+.fact .v{font-weight:700;margin-top:2px;line-height:1.4}
+.fact .s{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+.fact .s b{color:var(--no)}
+@media (max-width:440px){.facts{grid-template-columns:1fr}}
+.back{margin:12px 0 0;font-size:14px}
+
+/* sticky nav */
+.daynav{position:sticky;top:0;z-index:5;background:var(--bg);background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:16px -16px 0;padding:8px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.daynav::-webkit-scrollbar{display:none}
+.daynav a{flex:none;text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 11px;line-height:1.7}
+.daynav .prog{margin-left:auto;flex:none;font-size:13px;color:var(--muted);align-self:center;font-variant-numeric:tabular-nums;padding-left:8px;white-space:nowrap}
+
+section{padding-top:30px;scroll-margin-top:52px}
+h2{font-size:22px;line-height:1.3;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 14px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.subh{font-size:18px;margin:30px 0 4px}
+
+/* name */
+.steps{margin:0;padding-left:1.35em}
+.steps li{margin:3px 0}
+.me{display:grid;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.me label{font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.namerow{flex-wrap:nowrap}
+.namerow input{flex:1;min-width:0}
+.namerow .btn{flex:none}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:5px 11px;border-radius:999px;background:var(--accent-soft);line-height:1.4}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.status.live .dot{background:var(--yes)}
+.status.local .dot{background:var(--rec)}
+.modehint{font-size:14px;color:var(--muted);margin:0}
+.msg{font-size:14px;color:var(--muted)}
+.fine{font-size:13px;color:var(--muted);margin:8px 0 0}
+
+/* compare */
+.cmp{display:grid;gap:8px}
+.cmprow{display:grid;grid-template-columns:auto 72px minmax(0,1fr);gap:12px;align-items:center;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px 8px 8px}
+.cmprow .rk{font-family:var(--display);font-weight:700;font-size:22px;color:var(--accent);width:1.1em;text-align:center;line-height:1}
+.cmprow img{width:72px;height:72px;object-fit:cover;border-radius:8px;display:block;background:var(--line)}
+.cmprow .t{font-weight:700;line-height:1.35}
+.cmprow .t small{font-weight:400;color:var(--muted);font-size:13px;margin-left:4px}
+.cmprow .sc{font-size:13.5px;line-height:1.45;margin-top:2px}
+.cmprow .f{font-size:12.5px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.cmprow.alt{opacity:.86}
+.verdict{margin:12px 0 0;background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:15px}
+.k{font-weight:700;margin-right:6px}
+
+/* route cards */
+.opts{display:grid;gap:16px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.opt.is-rec{border-color:var(--rec);box-shadow:0 0 0 1px var(--rec)}
+.opt .body{padding:12px 14px 14px}
+.opt h3{margin:0;font-size:19px;line-height:1.35;display:flex;flex-wrap:wrap;align-items:center;gap:6px;text-wrap:balance}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;line-height:1.7}
+.pill.rec{background:var(--rec-soft);color:var(--rec)}
+.pill.ok{background:var(--yes-soft);color:var(--yes)}
+.pill.warn{background:var(--no-soft);color:var(--no)}
+.place{font-size:14px;color:var(--muted);margin-top:2px;line-height:1.4}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.tag{font-size:12.5px;line-height:1.75;padding:0 9px;border-radius:999px;background:var(--yes-soft);color:var(--yes);font-weight:600}
+.blurb{margin:10px 0 0}
+.minihead{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--accent);margin:12px 0 6px}
+.trail{list-style:none;margin:0;padding:0;counter-reset:st}
+.trail li{position:relative;padding:0 0 8px 30px;counter-increment:st;font-size:15px;line-height:1.5}
+.trail li::before{content:counter(st);position:absolute;left:0;top:1px;width:21px;height:21px;border-radius:50%;background:var(--accent);color:var(--on-strong);font:700 12.5px/21px var(--display);text-align:center}
+.trail li:not(:last-child)::after{content:"";position:absolute;left:10px;top:25px;bottom:3px;border-left:1.5px dashed var(--line)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0}
+.meta div{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:13px;line-height:1.6}
+.meta dt{color:var(--muted);flex:none}
+.meta dd{margin:0;font-weight:600}
+.caution{font-size:14px;color:var(--no);margin:10px 0 0}
+.links{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:14px}
+
+/* gallery */
+.gal{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.gal::-webkit-scrollbar{display:none}
+.ph{position:relative;flex:0 0 88%;margin:0;scroll-snap-align:start;background:var(--line)}
+.ph:only-child{flex-basis:100%}
+.ph img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.ph figcaption{position:absolute;left:0;right:0;bottom:0;padding:30px 10px 7px;background:linear-gradient(to top,rgba(0,0,0,.7),rgba(0,0,0,0));color:#fff;font-size:13.5px;line-height:1.35}
+.ph .cap{display:block;font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.ph .cr{display:inline-block;font-size:10.5px;color:rgba(255,255,255,.85);text-decoration:none;margin-top:1px}
+.galbar{display:flex;align-items:center;gap:8px;padding:8px 14px 0;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gbtn{font:inherit;font-size:18px;line-height:1;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;padding:0}
+.gbtn:disabled{opacity:.35;cursor:default}
+.ghint{margin-left:auto}
+
+/* vote */
+.vote{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.vbtn{font:inherit;font-weight:700;font-size:15px;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.vbtn.yes{color:var(--yes);border-color:var(--yes)}
+.vbtn.no{color:var(--no);border-color:var(--no)}
+.vbtn.yes[aria-pressed="true"]{background:var(--yes);color:var(--on-strong)}
+.vbtn.no[aria-pressed="true"]{background:var(--no);color:var(--on-strong)}
+.score{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.voters{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.voters:empty{display:none}
+.who{font-size:12.5px;border-radius:999px;padding:0 8px;line-height:1.8}
+.who.y{background:var(--yes-soft);color:var(--yes)}
+.who.n{background:var(--no-soft);color:var(--no)}
+.who.s{background:var(--accent-soft);color:var(--accent)}
+.who.u{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+
+/* my choices */
+.q{font-weight:700;margin:18px 0 8px}
+.q:first-child{margin-top:0}
+.q small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{font:inherit;font-weight:700;font-size:15px;min-height:42px;padding:0 15px;border-radius:999px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-strong)}
+.seg button small{font-weight:500;font-size:13px;margin-left:5px;opacity:.85}
+.qhint{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+.twoday{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.twoday div{background:var(--bg);border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.5}
+.twoday b{display:block;font-size:14px;margin-bottom:2px}
+.twoday span{display:block;font-variant-numeric:tabular-nums}
+@media (max-width:440px){.twoday{grid-template-columns:1fr}}
+
+/* ticket */
+.ticket{background:var(--surface);border:1.5px solid var(--rec);border-radius:14px;padding:16px;box-shadow:inset 6px 0 0 var(--rec)}
+.tk-k{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12.5px;color:var(--rec)}
+.tk-route{font-size:21px;font-weight:800;line-height:1.3;margin-top:4px;text-wrap:balance}
+.tk-line{color:var(--muted);font-size:14.5px;margin-top:2px}
+.tk-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;margin:12px 0 2px;font-variant-numeric:tabular-nums}
+.tk-big .n{font-family:var(--display);font-size:52px;font-weight:700;line-height:.95}
+.tk-big .u{font-weight:800;font-size:18px}
+.tk-big .x{font-weight:600;color:var(--muted)}
+.tk-big .eq{font-weight:800;font-size:18px}
+.tk-big .none{font-weight:700;font-size:17px;color:var(--muted)}
+.tk-maybe{font-size:14.5px;margin-top:4px}
+.tk-why{font-size:13px;color:var(--muted);margin-top:8px}
+.tk-cut{border-top:1.5px dashed var(--line);margin:14px -16px 14px -10px}
+.btn{font:inherit;font-weight:700;font-size:15px;min-height:44px;padding:0 18px;border-radius:12px;border:0;background:var(--accent);color:var(--on-strong);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.copyout{margin-top:10px;font-size:13px;min-height:170px}
+
+/* people + sums */
+.blk + .blk{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.blk h3{font-size:15px;margin:0 0 8px}
+.prow{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:8px;align-items:start;padding:3px 0}
+.prow .lab{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.8}
+.prow .names{display:flex;flex-wrap:wrap;gap:4px}
+.prow .none{color:var(--muted);font-size:14px;line-height:1.8}
+.nudge{font-size:14px;margin:10px 0 0;background:var(--rec-soft);border-radius:10px;padding:8px 12px}
+.sum-opt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px;line-height:1.35;padding:3px 0}
+.sum-opt.lead .nm{font-weight:700}
+.bars{display:flex;gap:3px;align-items:center;font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);white-space:nowrap}
+.bar{height:8px;border-radius:4px;display:inline-block}
+.bar.y{background:var(--yes)}
+.bar.n{background:var(--no)}
+
+/* notes */
+.notes{display:grid;gap:8px;margin-top:12px}
+.note{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:15px;overflow-wrap:anywhere}
+.note b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+
+/* credits */
+.credits{font-size:13px;color:var(--muted);padding-left:1.2em;margin:0}
+.credits li{margin:4px 0}
+.sources{font-size:13px;color:var(--muted);columns:2;column-gap:24px;padding-left:1.2em;margin:0}
+.sources li{break-inside:avoid;margin:3px 0}
+@media (max-width:520px){.sources{columns:1}}
+footer{padding-top:36px;font-size:13px;color:var(--muted)}
+
+@media (prefers-reduced-motion: no-preference){
+  .vbtn,.seg button,.btn{transition:background-color .15s ease,color .15s ease}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <img id="heroimg" alt="Isabela 的 Playa Montones：浅绿色的海和长长的沙滩" fetchpriority="high"
+    src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Montones-01.jpg/960px-Montones-01.jpg"
+    srcset="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Montones-01.jpg/500px-Montones-01.jpg 500w, https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Montones-01.jpg/960px-Montones-01.jpg 960w"
+    sizes="(max-width: 760px) 100vw, 720px">
+  <div class="shade"></div>
+  <a class="cr" id="herocr" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/File:Montones-01.jpg">© Lewiz menz · CC BY-SA 3.0</a>
+  <div class="txt">
+    <div class="eyebrow">Isabela · Jueves 19 Nov · A caballo</div>
+    <h1><span class="nw">19 号骑马：</span><span class="nw">先看风景，再投票</span></h1>
+  </div>
+</header>
+
+<p class="lede">行程投票里，19 号定了去 Isabela 冲浪加骑马。下面是能订的骑马路线：每条都配了风景照片，写了路线、价格和限制。大家投想骑哪条、上午还是傍晚、拼团还是包场，页面会自动算出该买几张什么票。</p>
+<div class="facts">
+  <div class="fact">
+    <div class="k">推荐 · 已查到余位</div>
+    <div class="v">Tropical Trail Rides</div>
+    <div class="s">11/19 上午 9:00、下午 3:30 都还有位（11/9 查）</div>
+    <div class="s">拼团 $85/人 · 包场 $120/人</div>
+  </div>
+  <div class="fact due">
+    <div class="k">订票截止 · 11/12</div>
+    <div class="v">提前 1 周才能免费取消</div>
+    <div class="s" id="deadline">11/12 之前订，还能退</div>
+    <div class="s">11/12 以后不退，也不能减人</div>
+  </div>
+</div>
+<p class="back"><a href="./">← 回到行程总投票</a></p>
+
+<nav class="daynav" aria-label="跳到某一部分">
+  <a href="#how">名字</a>
+  <a href="#compare">风景对比</a>
+  <a href="#routes">路线</a>
+  <a href="#mine">我的选择</a>
+  <a href="#tally">买票</a>
+  <a href="#notes">留言</a>
+  <span class="prog" id="prog"></span>
+</nav>
+
+<section id="how">
+  <h2>怎么投</h2>
+  <div class="card">
+    <ol class="steps">
+      <li>写名字，点「确定」。和行程投票页用同一个名字。</li>
+      <li>往下看每条路线的照片，点「想去」或「不想」。</li>
+      <li>到「我的选择」选骑不骑、上午还是傍晚、拼团还是包场。</li>
+    </ol>
+    <div class="me">
+      <label for="myname">我的名字</label>
+      <div class="row namerow">
+        <input type="text" id="myname" maxlength="20" placeholder="比如：小明" autocomplete="off" enterkeyhint="done">
+        <button type="button" class="btn" id="namebtn">确定</button>
+      </div>
+      <p class="msg" id="namemsg" aria-live="polite" style="margin:0"></p>
+      <div class="row">
+        <span class="status" id="status"><span class="dot"></span><span id="statusText">连接中…</span></span>
+      </div>
+      <p class="modehint" id="modehint">正在连接投票数据。</p>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <h2>风景一眼对比</h2>
+  <p class="sub">按风景从好到一般排的，点一行跳到那条路线。</p>
+  <div class="cmp" id="cmpList"></div>
+  <p class="verdict"><span class="k">我的看法</span>最在乎风景就选 Tropical Trail Rides：海滩、悬崖、海蚀洞、树林一趟都能看到，离冲浪的 Jobos 海滩只有 10 分钟。Pintos 有灯塔和悬崖，但开车远，还有一段走公路。Hacienda Carey 的灯塔遗址很好拍，但骑多久不固定。最后两条要换日子。</p>
+</section>
+
+<section id="routes">
+  <h2>路线和风景</h2>
+  <p class="sub">照片左右滑。照片拍的是同一片海岸，不一定是马队走的那个点；马场自己拍的骑马照片，点卡片里的「看真实骑马照片」。</p>
+  <div class="opts" id="mainRoutes"></div>
+  <h3 class="subh">换一天也能骑</h3>
+  <p class="sub">这两家不在 Isabela。选它们，19 号就只冲浪，骑马挪到别的日子。</p>
+  <div class="opts" id="altRoutes"></div>
+</section>
+
+<section id="mine">
+  <h2>我的选择</h2>
+  <p class="sub">点一下就保存，再点一次取消。下面的「买票统计」会马上更新。</p>
+  <div class="card">
+    <div class="q">1. 我骑不骑？</div>
+    <div class="seg" role="group" aria-label="我骑不骑">
+      <button type="button" data-ch="ride" data-val="y" aria-pressed="false">要骑</button>
+      <button type="button" data-ch="ride" data-val="m" aria-pressed="false">考虑中</button>
+      <button type="button" data-ch="ride" data-val="n" aria-pressed="false">不骑，在海边玩</button>
+    </div>
+
+    <div class="q">2. 上午骑还是傍晚骑？</div>
+    <div class="seg" role="group" aria-label="时段">
+      <button type="button" data-ch="slot" data-val="am" aria-pressed="false">上午<small>9:00</small></button>
+      <button type="button" data-ch="slot" data-val="pm" aria-pressed="false">傍晚<small>3:30，接近日落</small></button>
+      <button type="button" data-ch="slot" data-val="any" aria-pressed="false">都行</button>
+    </div>
+    <div class="twoday">
+      <div><b>上午骑</b><span>07:45 从住处出发</span><span>09:00–11:00 骑马</span><span>午饭后冲浪或躺海滩</span></div>
+      <div><b>傍晚骑</b><span>08:00 出发，09:30 冲浪课</span><span>中午在海边吃饭</span><span>15:30–17:30 骑马，日落约 17:50</span></div>
+    </div>
+    <p class="qhint">上午凉快，人少；傍晚光线最柔和，拍照最好看。时间按 Tropical Trail Rides 写的，其他家看卡片。</p>
+
+    <div class="q">3. 拼团还是包场？<small>只有 Tropical Trail Rides 分</small></div>
+    <div class="seg" role="group" aria-label="票种">
+      <button type="button" data-ch="kind" data-val="group" aria-pressed="false">拼团<small>$85</small></button>
+      <button type="button" data-ch="kind" data-val="private" aria-pressed="false">包场<small>$120</small></button>
+      <button type="button" data-ch="kind" data-val="any" aria-pressed="false">都行</button>
+    </div>
+    <p class="qhint">拼团可能和别的游客走一个马队；包场只有我们几个，想停下来拍照更自由。</p>
+  </div>
+</section>
+
+<section id="tally">
+  <h2>买票统计</h2>
+  <p class="sub">自动算的。路线看所有人的票数；时段和票种只看「要骑」和「考虑中」的人怎么选。</p>
+  <div class="ticket" id="ticket"></div>
+  <textarea class="copyout" id="copyout" readonly hidden aria-label="买票清单（可手动复制）"></textarea>
+  <p class="msg" id="copymsg" aria-live="polite" style="margin:8px 0 0"></p>
+  <div class="card" style="margin-top:12px">
+    <div class="blk" id="people"></div>
+    <div class="blk" id="routesum"></div>
+    <div class="blk" id="choicesum"></div>
+  </div>
+</section>
+
+<section id="notes">
+  <h2>留言</h2>
+  <p class="sub">一个人一条，改了就覆盖。比如：怕晒想骑上午；第一次骑马有点怕；想拍日落。</p>
+  <div class="card">
+    <label for="mynote" class="msg">我的留言</label>
+    <textarea id="mynote" maxlength="400" placeholder="写点什么，自动保存"></textarea>
+    <div class="notes" id="noteList"></div>
+  </div>
+</section>
+
+<section id="credits">
+  <h2>照片和信息来源</h2>
+  <p class="sub">风景照片来自维基共享资源（Wikimedia Commons），按各自的授权使用，只做了缩放和裁切。点名字可以看原图。</p>
+  <ul class="credits" id="creditList"></ul>
+  <h3 class="subh" style="font-size:16px">信息来源</h3>
+  <ul class="sources">
+    <li><a href="https://www.tropicaltrailrides.com" target="_blank" rel="noopener">Tropical Trail Rides 官网</a></li>
+    <li><a href="https://fareharbor.com/embeds/book/tropicaltrailrides/?full-items=yes&amp;flow=18936" target="_blank" rel="noopener">Tropical Trail Rides 预订页（余位）</a></li>
+    <li><a href="https://www.travelocity.com/things-to-do/horseback-ride-by-the-beach-in-aguadilla-puerto-rico.a47465248.activity-details" target="_blank" rel="noopener">Hacienda Carey 上午场</a></li>
+    <li><a href="https://app.advcollective.com/local-experts/sunset-horseback-ride-at-the-beach-hacienda-carey" target="_blank" rel="noopener">Hacienda Carey 日落场</a></li>
+    <li><a href="https://lokalee.app/tours/horseback-ride-by-the-beach-in-aguadilla-puerto-rico" target="_blank" rel="noopener">Hacienda Carey 体重和集合点</a></li>
+    <li><a href="https://app.advcollective.com/local-experts/outdoor-horseback-tour-pintos-r-us-rincon" target="_blank" rel="noopener">Pintos “R” Us 场次和价格</a></li>
+    <li><a href="https://www.tripadvisor.com/Attraction_Review-g264369-d2324376-Reviews-Horseback_Rides_by_Pintos_R_Us-Rincon_Puerto_Rico.html" target="_blank" rel="noopener">Pintos “R” Us 评价</a></li>
+    <li><a href="https://www.travelocity.com/things-to-do/luquillo-beach-horse-ride-from-carabali-rainforest-adventure-park.a45915764.activity-details" target="_blank" rel="noopener">Carabalí 海滩骑马</a></li>
+    <li><a href="https://platform.magpie.travel/things-to-do/luquillo-beach-horseback-riding-adventure/aa947160-d846-49be-a4fb-f64ed4e71913" target="_blank" rel="noopener">Carabalí 体重和取消规则</a></li>
+    <li><a href="https://www.expedia.com/things-to-do/from-carolina-horse-riding-at-a-private-ranch.a4750892.activity-details" target="_blank" rel="noopener">Hacienda Campo Rico</a></li>
+    <li><a href="https://wotif.com/things-to-do/amazing-horseback-riding.a2311282.activity-details" target="_blank" rel="noopener">Campo Rico 每单人数</a></li>
+  </ul>
+</section>
+
+<footer>价格、场次和余位是 2026 年 11 月 9 日查的，订之前以预订页为准。<a href="./">回到行程总投票</a></footer>
+</div>
+
+<script type="module">
+/* ===== Firebase 配置（和行程投票页同一个项目） ===== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCturkZXzye-b-dyPgIOlemP67yLYDlMdg",
+  authDomain: "san-jose-travel-plan.firebaseapp.com",
+  projectId: "san-jose-travel-plan",
+  storageBucket: "san-jose-travel-plan.firebasestorage.app",
+  messagingSenderId: "1070064359910",
+  appId: "1:1070064359910:web:72e7bbf14a29237c33de27"
+};
+const FIREBASE_VERSION = "10.12.2";
+const COLL = "horse";        // 这一页的投票
+const MAIN_COLL = "votes";   // 行程总投票（只读，用来提醒谁还没来）
+
+var TOTAL_PEOPLE = 6;
+
+/* ---------- photos (Wikimedia Commons) ---------- */
+var TH = "https://thumb.wikimedia.org/wikipedia/commons/thumb/";
+var LIC = {
+  "CC BY 2.0":"https://creativecommons.org/licenses/by/2.0/",
+  "CC BY 4.0":"https://creativecommons.org/licenses/by/4.0/",
+  "CC BY-SA 2.0":"https://creativecommons.org/licenses/by-sa/2.0/",
+  "CC BY-SA 3.0":"https://creativecommons.org/licenses/by-sa/3.0/",
+  "CC BY-SA 4.0":"https://creativecommons.org/licenses/by-sa/4.0/"
+};
+var PH = {
+  i_montones:{ f:"5/55/Montones-01.jpg", cap:"Playa Montones：Isabela 的长沙滩，就在 Jobos 旁边", alt:"Isabela 的 Playa Montones，浅绿色的海和长沙滩", by:"Lewiz menz", lic:"CC BY-SA 3.0" },
+  i_cliff:{ f:"8/87/Acantilados_en_Isabela%2C_Puerto_Rico_-_panoramio.jpg", cap:"Isabela 海边的礁石和悬崖", alt:"Isabela 海边，浪打在红褐色的礁石上", by:"Norma Arbelo Irizarry", lic:"CC BY-SA 3.0" },
+  i_rocks:{ f:"d/d0/Atlantic_Ocean_and_rocks_in_Isabela%2C_Puerto_Rico.jpg", cap:"Isabela 北岸，大浪拍礁石", alt:"深蓝色的大西洋，白浪冲过平平的礁石", by:"Arturo Donate", lic:"CC BY 2.0" },
+  i_playa:{ f:"3/35/Playa_de_Isabela%2C_Puerto_Rico_-_panoramio.jpg", cap:"Isabela 的海，11 月浪会大一些", alt:"Isabela 海边一排排白浪", by:"Norma Arbelo Irizarry", lic:"CC BY-SA 3.0" },
+  a_ruinas:{ f:"2/29/Las_Ruinas.jpg", cap:"Las Ruinas：海边的旧灯塔遗址", alt:"海边礁石上的旧灯塔砖墙遗址，周围是草地", by:"Ktorrespr", lic:"CC BY-SA 4.0" },
+  a_arches:{ f:"7/7e/Punta_Borinquen_in_Aguadilla_IMG_0815.jpg", cap:"遗址的一排拱窗，墙后就是海", alt:"红砖墙上一排拱形窗洞", by:"Ligocsicnarf89", lic:"CC BY-SA 4.0" },
+  a_ruins_sea:{ f:"f/f9/Punta_Borinquen_in_Aguadilla_IMG_0823.jpg", cap:"Punta Borinquen 海角", alt:"砖石遗址，远处是海", by:"Ligocsicnarf89", lic:"CC BY-SA 4.0" },
+  r_light:{ f:"2/25/Rincon_-_Faro_de_Punta_Hig%C3%BCera.jpg", cap:"Rincón 灯塔（Punta Higüera），马队会经过", alt:"蓝天下的白色灯塔和草坪", by:"P. Hughes", lic:"CC BY 4.0" },
+  r_domes:{ f:"9/9d/Rincon_-_Domes_Beach.jpg", cap:"Domes Beach：有名的冲浪海滩，白色圆顶是 60 年代的旧核电站", alt:"弯弯的沙滩和树林，远处有白色圆顶建筑", by:"P. Hughes", lic:"CC BY 4.0" },
+  r_sunset:{ f:"7/72/Sunset_at_Maria%27s_Beach%2C_Rinc%C3%B3n%2C_Puerto_Rico.jpg", cap:"Rincón 的日落（María’s Beach）", alt:"椰子树剪影后面的日落海滩", by:"M S", lic:"CC BY-SA 2.0" },
+  r_steps:{ f:"6/64/Steps_Beach_Rincon.JPG", cap:"Steps Beach，Rincón", alt:"椰子树围着的小海湾，浪花拍岸", by:"Stacy Hall", lic:"公有领域" },
+  l_beach:{ f:"7/7d/Beach_in_Luquillo%2C_Puerto_Rico.jpg", cap:"Luquillo 的海滩", alt:"椰子林延伸到海边的沙滩", by:"Šarūnas Burdulis", lic:"CC BY-SA 2.0" },
+  l_yunque:{ f:"4/46/View_of_El_Yunque_from_Britton_Tower_in_Puerto_Rico.jpg", cap:"El Yunque 雨林的山", alt:"云雾笼罩的绿色雨林山谷", by:"Šarūnas Burdulis", lic:"CC BY-SA 2.0" },
+  l_luq:{ f:"5/5e/Luquillo_Beach%2C_Luquillo%2C_Puerto_Rico.jpg", cap:"Luquillo Beach", alt:"树荫下望出去的碧绿海水和沙滩", by:"Ricardo Manual", lic:"CC BY 2.0" },
+  h_pasofino:{ f:"0/04/Puerto_rican-Paso-Fino-Horse-chestnut.jpg", cap:"波多黎各本地的 Paso Fino 马（摄于 Carolina）", alt:"一匹枣红色的 Paso Fino 马站在草地上", by:"Arsdelicata", lic:"CC BY-SA 3.0", pos:"50% 30%" }
+};
+function phName(k){ return PH[k].f.split("/").pop(); }
+function phSrc(k, w){ return TH + PH[k].f + "/" + w + "px-" + phName(k); }
+function phPage(k){ return "https://commons.wikimedia.org/wiki/File:" + phName(k); }
+function gimg(q){ return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q); }
+
+/* ---------- routes ---------- */
+var TTR_BOOK = "https://fareharbor.com/embeds/book/tropicaltrailrides/?full-items=yes&flow=18936";
+var ROUTES = [
+  { id:"ttr", grp:"main", rec:true, ok:"已查到余位",
+    name:"Tropical Trail Rides", short:"Tropical Trail Rides（Isabela）",
+    place:"Isabela · Shacks Beach 旁 · 离 Jobos 海滩约 10 分钟",
+    photos:["i_cliff","i_montones","i_rocks","i_playa"],
+    tags:["两片僻静海滩","杏仁树林","Survival Beach","崖下海蚀洞","爬上悬崖看全景","松林"],
+    cmpScene:"海滩 · 悬崖 · 海蚀洞 · 杏仁树林 · 松林", cmpFacts:"2 小时 · $85 起 · 离 Jobos 10 分钟",
+    blurb:"西北角口碑很好的马场，养了 30 匹 Paso Fino 马。这是波多黎各本地的马，步子碎，坐在上面很稳，新手也不怕。一趟能看到海滩、悬崖、海蚀洞和两种树林，风景种类最多。",
+    steps:["从马场出发，穿过一片杏仁树林","沿着海边，经过两片平时没什么人的海滩","最后一站 Survival Beach：崖壁下有浅浅的海蚀洞。可以下马爬上悬崖看全景，也可以下水游一会儿","走乡间小路和松林回到马场"],
+    meta:[["时长","2 小时"],["拼团","$85/人"],["包场","$120/人，2 人起"],["11/19 场次","拼团 9:00、15:30；包场 9:00、9:30、15:00、15:30 等"],["余位","11/9 查过，两场都能订 6 人"],["省钱","打电话订、付现金有折扣"]],
+    caution:"体重上限 240 磅（约 109 公斤），严格执行。提前 1 周才能取消：11/12 以后不退，也不能减人。下雨照常骑。",
+    links:[{t:"官网",u:"https://www.tropicaltrailrides.com"},{t:"预订页",u:TTR_BOOK},{t:"电话 (787) 872-9256",u:"tel:+17878729256"},{t:"看真实骑马照片",u:gimg("Tropical Trail Rides Isabela Puerto Rico horseback")}],
+    kinds:true, price:{ am:{group:85, private:120}, pm:{group:85, private:120} },
+    time:{ am:"上午 9:00–11:00", pm:"傍晚 15:30–17:30" }, ptime:{ am:"上午 9:00 或 9:30 开始", pm:"傍晚 15:00 或 15:30 开始" },
+    date:"11/19 周四", book:TTR_BOOK,
+    buyNote:"体重上限 240 磅；11/12 以后不能取消、不能减人。" },
+
+  { id:"carey", grp:"main",
+    name:"Hacienda Carey", short:"Hacienda Carey（Aguadilla）",
+    place:"Aguadilla · Punta Borinquen · 离 Jobos 海滩约 20 分钟",
+    photos:["a_ruinas","a_arches","a_ruins_sea"],
+    tags:["Punta Borinquen 海滩","Las Ruinas 灯塔遗址","日落场","帮忙拍照录像"],
+    cmpScene:"海滩 · 灯塔遗址 · 日落", cmpFacts:"最长 1.5 小时 · $100–125 · 离 Jobos 20 分钟",
+    blurb:"以前叫 Playuelas Horse Rides。路线在 Aguadilla 西北角的海边，最出片的是 Las Ruinas：一座旧灯塔，1918 年大地震后废弃，只剩一圈砖墙立在海边。傍晚场 4 点出发，能赶上日落前的光。运营方说偶尔能看到海豚。",
+    steps:["在海滩边先讲安全，绕两圈熟悉马","沿 Punta Borinquen 一带的海滩骑","经过 Las Ruinas 旧灯塔遗址"],
+    meta:[["时长","最长 1.5 小时，不固定"],["上午场","约 $100/人"],["日落场","16:00，约 $125/人"],["余位","没查"],["含","照片和视频"]],
+    caution:"骑多久不固定，平台上写 30 分钟到 1.5 小时，看当天马队情况。体重上限 230 磅（约 104 公斤）。平台上多数可以提前 24 小时免费取消。",
+    links:[{t:"上午场",u:"https://www.travelocity.com/things-to-do/horseback-ride-by-the-beach-in-aguadilla-puerto-rico.a47465248.activity-details"},{t:"日落场",u:"https://app.advcollective.com/local-experts/sunset-horseback-ride-at-the-beach-hacienda-carey"},{t:"看真实骑马照片",u:gimg("Hacienda Carey Aguadilla horseback beach")}],
+    price:{ am:100, pm:125 }, time:{ am:"上午场（几点开始看预订页）", pm:"16:00 日落场" },
+    date:"11/19 周四",
+    book:"https://www.travelocity.com/things-to-do/horseback-ride-by-the-beach-in-aguadilla-puerto-rico.a47465248.activity-details",
+    bookPm:"https://app.advcollective.com/local-experts/sunset-horseback-ride-at-the-beach-hacienda-carey",
+    buyNote:"体重上限 230 磅；骑多久不固定；余位还没查。" },
+
+  { id:"pintos", grp:"main",
+    name:"Pintos “R” Us", short:"Pintos “R” Us（Rincón）",
+    place:"Rincón · 离 Jobos 海滩约 45 分钟",
+    photos:["r_light","r_domes","r_sunset","r_steps"],
+    tags:["冲浪海滩","Rincón 灯塔","热带树林小路","悬崖看 Spanish Wall"],
+    cmpScene:"冲浪海滩 · 灯塔 · 悬崖海景 · 树林小路", cmpFacts:"2 小时 · 约 $100 · 离 Jobos 45 分钟",
+    blurb:"Rincón 是西海岸的冲浪小镇，日落很有名。路线沿着冲浪海滩走，经过灯塔，再穿过树林小路上到悬崖，往下看 Spanish Wall 那片海。有评价说海滩段比想象的少，中间有一段走公路。",
+    steps:["沿着有名的冲浪海滩骑","经过 Rincón 灯塔","走一段弯弯曲曲的热带树林小路","上到悬崖，往下看 Spanish Wall 和海"],
+    meta:[["时长","2 小时"],["价格","约 $100/人"],["场次","每天 9:00；日落场只在冬季，要问 11 月有没有"],["人数","每团最多 10 人"],["余位","没查"]],
+    caution:"离住处最远，单程约 1 小时 40 分。价格和场次来自第三方页面，订之前打电话确认。",
+    links:[{t:"Tripadvisor 评价和照片",u:"https://www.tripadvisor.com/Attraction_Review-g264369-d2324376-Reviews-Horseback_Rides_by_Pintos_R_Us-Rincon_Puerto_Rico.html"},{t:"场次和价格",u:"https://app.advcollective.com/local-experts/outdoor-horseback-tour-pintos-r-us-rincon"},{t:"看真实骑马照片",u:gimg("Pintos R Us Rincon horseback")}],
+    price:{ am:100, pm:100 }, time:{ am:"上午 9:00–11:00", pm:"日落场（要先问 11 月有没有）" },
+    date:"11/19 周四",
+    book:"https://app.advcollective.com/local-experts/outdoor-horseback-tour-pintos-r-us-rincon",
+    buyNote:"价格和场次要先打电话确认。" },
+
+  { id:"carabali", grp:"alt", warn:"要换到 11/20",
+    name:"Carabalí 雨林公园", short:"Carabalí（Luquillo）",
+    place:"Luquillo · El Yunque 山脚 · 离住处约 1 小时 30 分",
+    photos:["l_yunque","l_beach","l_luq"],
+    tags:["雨林山脚","过 Mameyes 河","河里泡半小时","Luquillo 海滩"],
+    cmpScene:"雨林 · 河 · 海滩", cmpFacts:"2.5 小时 · 约 $164 · 要换到 11/20",
+    blurb:"这几条里唯一能把雨林、河和海一次骑完的。要是 11/20 选了 El Yunque 雨林那天，下午可以接着骑这个。",
+    steps:["从 Carabalí 出发，进 El Yunque 山脚的树林","沿 Mameyes 河骑，中途下马在河里泡半小时","骑到 Luquillo 海边，沿沙滩走一段"],
+    meta:[["时长","2.5 小时"],["价格","约 $164/人"],["场次","13:30，提前 45 分钟到"],["体重","约 250 磅以内"],["取消","多数平台订了不退"]],
+    caution:"要跟 11/20「El Yunque」那天绑在一起，19 号就不骑了。",
+    links:[{t:"预订页",u:"https://spurexperiences.com/experiences/beach-horseback-ride-puerto-rico"},{t:"平台评价",u:"https://www.travelocity.com/things-to-do/luquillo-beach-horse-ride-from-carabali-rainforest-adventure-park.a45915764.activity-details"},{t:"看真实骑马照片",u:gimg("Carabali Luquillo beach horseback ride")}],
+    price:{ am:164, pm:164 }, one:"13:30–16:00",
+    date:"11/20 周五",
+    book:"https://spurexperiences.com/experiences/beach-horseback-ride-puerto-rico",
+    buyNote:"日期是 11/20，不是 19 号；多数平台订了不退。" },
+
+  { id:"camporico", grp:"alt", warn:"没有海景",
+    name:"Hacienda Campo Rico", short:"Campo Rico（Carolina）",
+    place:"Carolina · 离机场约 10 分钟",
+    photos:["h_pasofino"],
+    tags:["2,200 英亩私人牧场","山丘和草地","远处能看到 El Yunque","山顶 mojito 吧"],
+    cmpScene:"牧场 · 山丘草地 · 远眺雨林，没有海", cmpFacts:"2 小时 · 约 $113 · 可以放 11/22",
+    blurb:"离机场最近，可以放在 11/22 回程日：退房后开过去，下午 3 点骑，5 点结束，再去还车。风景是田园和山，没有海。",
+    steps:["在牧场入口集合，先上一堂简单的骑马课","骑过山丘、草地和林间小路","中途停下来看风景，远处是 El Yunque","回来去山顶的 mojito 吧坐坐（饮料自费）"],
+    meta:[["时长","2 小时"],["价格","约 $113/人"],["场次","上午 · 15:00"],["体重","240 磅以内"],["取消","平台上可提前 24 小时免费取消"]],
+    caution:"有的平台每单最多 4 人，6 个人要分两单订。",
+    links:[{t:"预订页",u:"https://www.expedia.com/things-to-do/from-carolina-horse-riding-at-a-private-ranch.a4750892.activity-details"},{t:"看真实骑马照片",u:gimg("Hacienda Campo Rico horseback riding")}],
+    price:{ am:113, pm:113 }, time:{ am:"上午场", pm:"下午 15:00–17:00" },
+    date:"11/22 周日",
+    book:"https://www.expedia.com/things-to-do/from-carolina-horse-riding-at-a-private-ranch.a4750892.activity-details",
+    buyNote:"日期是 11/22 回程日；有的平台每单最多 4 人。" }
+];
+var R = {}, ORDER = [];
+ROUTES.forEach(function(r){ R[r.id] = r; ORDER.push(r.id); });
+var CMP_ORDER = ["ttr","pintos","carey","carabali","camporico"];
+var CH = { ride:["y","m","n"], slot:["am","pm","any"], kind:["group","private","any"] };
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text!=null) e.textContent = text; return e; }
+function hash36(str){ var h=5381; for(var i=0;i<str.length;i++){ h=((h<<5)+h+str.charCodeAt(i))|0; } return (h>>>0).toString(36); }
+function money(n){ return "$" + Number(n).toLocaleString("en-US"); }
+function smooth(){ try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; }catch(e){ return "auto"; } }
+function cleanVotes(v){ var o={}; Object.keys(v||{}).forEach(function(k){ if(R[k] && (v[k]===1 || v[k]===-1)) o[k]=v[k]; }); return o; }
+function cleanS(s){ var o={}; Object.keys(CH).forEach(function(k){ if(s && CH[k].indexOf(s[k])>=0) o[k]=s[k]; }); return o; }
+
+/* ---------- static render ---------- */
+function imgEl(k, opts){
+  opts = opts || {};
+  var im = document.createElement("img");
+  if(opts.thumb){ im.src = phSrc(k, 330); }
+  else {
+    im.src = phSrc(k, 960);
+    im.srcset = phSrc(k, 500) + " 500w, " + phSrc(k, 960) + " 960w";
+    im.sizes = opts.sizes || "(max-width: 740px) 88vw, 620px";
+  }
+  im.alt = opts.decor ? "" : (PH[k].alt || PH[k].cap);
+  im.decoding = "async";
+  if(!opts.eager) im.loading = "lazy";
+  if(PH[k].pos) im.style.objectPosition = PH[k].pos;
+  return im;
+}
+
+function gallery(r, eager){
+  var wrap = el("div","galwrap");
+  var g = el("div","gal"); g.setAttribute("tabindex","0"); g.setAttribute("role","group");
+  g.setAttribute("aria-label", r.name + " 的风景照片，共 " + r.photos.length + " 张，可左右滑动");
+  r.photos.forEach(function(k, i){
+    var f = el("figure","ph");
+    f.appendChild(imgEl(k, { eager: eager && i === 0 }));
+    var fc = el("figcaption");
+    fc.appendChild(el("span","cap",PH[k].cap));
+    var a = el("a","cr", "© " + PH[k].by + " · " + PH[k].lic); a.href = phPage(k); a.target = "_blank"; a.rel = "noopener";
+    fc.appendChild(a); f.appendChild(fc); g.appendChild(f);
+  });
+  wrap.appendChild(g);
+  if(r.photos.length > 1){
+    var n = r.photos.length;
+    var bar = el("div","galbar");
+    var prev = el("button","gbtn","‹"); prev.type = "button"; prev.setAttribute("aria-label","上一张"); prev.disabled = true;
+    var cnt = el("span","gcnt","1 / " + n);
+    var next = el("button","gbtn","›"); next.type = "button"; next.setAttribute("aria-label","下一张");
+    bar.appendChild(prev); bar.appendChild(cnt); bar.appendChild(next); bar.appendChild(el("span","ghint","左右滑动看更多"));
+    wrap.appendChild(bar);
+    var stepW = function(){ var f = g.firstElementChild; return f ? f.getBoundingClientRect().width + 6 : 300; };
+    prev.addEventListener("click", function(){ g.scrollBy({ left: -stepW(), behavior: smooth() }); });
+    next.addEventListener("click", function(){ g.scrollBy({ left: stepW(), behavior: smooth() }); });
+    var raf = 0;
+    g.addEventListener("scroll", function(){
+      if(raf) return;
+      raf = requestAnimationFrame(function(){
+        raf = 0;
+        var i = Math.round(g.scrollLeft / stepW());
+        if(g.scrollLeft + g.clientWidth >= g.scrollWidth - 4) i = n - 1;
+        i = Math.max(0, Math.min(n - 1, i));
+        cnt.textContent = (i + 1) + " / " + n;
+        prev.disabled = i === 0; next.disabled = i === n - 1;
+      });
+    }, { passive:true });
+  }
+  return wrap;
+}
+
+function routeCard(r, eager){
+  var a = el("article","opt" + (r.rec ? " is-rec" : "")); a.id = "r-" + r.id;
+  a.appendChild(gallery(r, eager));
+  var b = el("div","body");
+  var h = el("h3", null, r.name);
+  if(r.rec) h.appendChild(el("span","pill rec","推荐"));
+  if(r.ok) h.appendChild(el("span","pill ok", r.ok));
+  if(r.warn) h.appendChild(el("span","pill warn", r.warn));
+  b.appendChild(h);
+  b.appendChild(el("div","place", r.place));
+  var tg = el("div","tags"); tg.setAttribute("aria-label","风景看点");
+  r.tags.forEach(function(t){ tg.appendChild(el("span","tag",t)); }); b.appendChild(tg);
+  b.appendChild(el("p","blurb", r.blurb));
+  b.appendChild(el("div","minihead","路线"));
+  var ol = el("ol","trail"); r.steps.forEach(function(s){ ol.appendChild(el("li",null,s)); }); b.appendChild(ol);
+  var dl = el("dl","meta");
+  r.meta.forEach(function(m){ var d = el("div"); d.appendChild(el("dt",null,m[0])); d.appendChild(el("dd",null,m[1])); dl.appendChild(d); });
+  b.appendChild(dl);
+  if(r.caution){ var c = el("p","caution"); c.appendChild(el("span","k","注意")); c.appendChild(document.createTextNode(r.caution)); b.appendChild(c); }
+  var l = el("p","links");
+  r.links.forEach(function(x){ var an = el("a",null,x.t); an.href = x.u; if(!/^tel:/.test(x.u)){ an.target = "_blank"; an.rel = "noopener"; } l.appendChild(an); });
+  b.appendChild(l);
+  var v = el("div","vote"); v.setAttribute("data-opt", r.id);
+  var by = el("button","vbtn yes","想去"); by.type = "button"; by.setAttribute("data-v","1"); by.setAttribute("aria-pressed","false");
+  var bn = el("button","vbtn no","不想"); bn.type = "button"; bn.setAttribute("data-v","-1"); bn.setAttribute("aria-pressed","false");
+  var sc = el("span","score"); sc.id = "score-" + r.id;
+  v.appendChild(by); v.appendChild(bn); v.appendChild(sc);
+  b.appendChild(v);
+  var w = el("div","voters"); w.id = "voters-" + r.id; b.appendChild(w);
+  a.appendChild(b);
+  return a;
+}
+
+function renderStatic(){
+  var cl = $("cmpList");
+  CMP_ORDER.forEach(function(id, i){
+    var r = R[id];
+    var a = el("a","cmprow" + (r.grp === "alt" ? " alt" : "")); a.href = "#r-" + id;
+    a.appendChild(el("span","rk", String(i + 1)));
+    a.appendChild(imgEl(r.photos[0], { thumb:true, decor:true, eager: i < 3 }));
+    var t = el("div");
+    var tt = el("div","t", r.name); if(r.grp === "alt") tt.appendChild(el("small",null, r.warn)); t.appendChild(tt);
+    t.appendChild(el("div","sc", r.cmpScene));
+    t.appendChild(el("div","f", r.cmpFacts));
+    a.appendChild(t);
+    cl.appendChild(a);
+  });
+
+  var mh = $("mainRoutes"), ah = $("altRoutes");
+  ROUTES.forEach(function(r, i){ (r.grp === "main" ? mh : ah).appendChild(routeCard(r, i === 0)); });
+
+  var cr = $("creditList"), seen = {};
+  ROUTES.forEach(function(r){ r.photos.forEach(function(k){ if(!seen[k]){ seen[k] = 1; addCredit(k); } }); });
+  if(!seen.i_montones) addCredit("i_montones");
+  function addCredit(k){
+    var p = PH[k], li = el("li");
+    var a = el("a", null, p.cap); a.href = phPage(k); a.target = "_blank"; a.rel = "noopener";
+    li.appendChild(a); li.appendChild(document.createTextNode(" — " + p.by + "，"));
+    if(LIC[p.lic]){ var la = el("a", null, p.lic); la.href = LIC[p.lic]; la.target = "_blank"; la.rel = "noopener"; li.appendChild(la); }
+    else li.appendChild(document.createTextNode(p.lic));
+    cr.appendChild(li);
+  }
+
+  var dl = $("deadline");
+  dl.textContent = "";
+  dl.appendChild(document.createTextNode("11/12 之前订还能退，"));
+  dl.appendChild(el("b", null, deadlineText()));
+}
+
+function deadlineText(){
+  var now = new Date(Date.now() - 4 * 3600 * 1000);   // 波多黎各时间 UTC-4
+  var today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  var d = Math.round((Date.UTC(2026, 10, 12) - today) / 86400000);
+  if(d > 1) return "还剩 " + d + " 天";
+  if(d === 1) return "明天截止";
+  if(d === 0) return "今天截止";
+  return "已经过了截止日";
+}
+
+/* ---------- state ---------- */
+var LS_KEY = "pr6-horse-v1", MAIN_LS_KEY = "pr6-trip-site-v1";
+var state = { mode:"connecting", nick:"", docId:null, votes:{}, s:{}, note:"", docs:{}, mainDocs:{} };
+var fs = null, fdb = null;
+function idFor(n){ return "n-" + hash36(String(n).trim().toLowerCase()); }
+function lsGet(key){ try{ var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function lsSet(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({ nick:state.nick, votes:state.votes, s:state.s, note:state.note })); }catch(e){} }
+(function restoreLocal(){
+  var s = lsGet(LS_KEY);
+  if(s){ state.nick = s.nick || ""; state.votes = cleanVotes(s.votes); state.s = cleanS(s.s); state.note = s.note || ""; }
+  if(!state.nick){ var m = lsGet(MAIN_LS_KEY); if(m && typeof m.nick === "string") state.nick = m.nick.trim().slice(0,20); }
+  if(state.nick) state.docId = idFor(state.nick);
+})();
+
+/* ---------- people ---------- */
+function entries(){
+  var list = [];
+  Object.keys(state.docs).forEach(function(id){
+    if(id === state.docId) return;
+    var d = state.docs[id] || {};
+    list.push({ id:id, nick: typeof d.nick === "string" ? d.nick : "", v:cleanVotes(d.v), s:cleanS(d.s), note: typeof d.note === "string" ? d.note : "" });
+  });
+  list.unshift({ id: state.docId || "__me", nick: state.nick, v: state.votes, s: state.s, note: state.note, me:true });
+  return list;
+}
+function nameOf(e){ return e.me ? (state.nick || "我") : (e.nick || "朋友"); }
+function hasAny(e){ return Object.keys(e.v||{}).length > 0 || Object.keys(e.s||{}).length > 0 || (e.note||"").trim().length > 0; }
+function docHasAny(d){ return !!d && hasAny({ v:cleanVotes(d.v), s:cleanS(d.s), note: typeof d.note === "string" ? d.note : "" }); }
+
+/* ---------- tallies ---------- */
+function tally(list){
+  var T = {}; ORDER.forEach(function(id){ T[id] = { y:[], n:[] }; });
+  list.forEach(function(e){ Object.keys(e.v||{}).forEach(function(k){ if(!T[k]) return; if(e.v[k] === 1) T[k].y.push(e); else if(e.v[k] === -1) T[k].n.push(e); }); });
+  return T;
+}
+function rankRoutes(T){
+  return ORDER.slice().sort(function(a, b){
+    var sa = T[a].y.length - T[a].n.length, sb = T[b].y.length - T[b].n.length;
+    if(sb !== sa) return sb - sa;
+    if(T[b].y.length !== T[a].y.length) return T[b].y.length - T[a].y.length;
+    return ORDER.indexOf(a) - ORDER.indexOf(b);
+  });
+}
+function suggest(list, T){
+  var ranked = rankRoutes(T);
+  var anyVotes = ORDER.some(function(id){ return T[id].y.length || T[id].n.length; });
+  var top = R[ranked[0]];
+  function by(key, val, pool){ return pool.filter(function(e){ return e.s[key] === val; }); }
+  var ry = by("ride","y",list), rm = by("ride","m",list), rn = by("ride","n",list);
+  var pool = ry.concat(rm);
+  var am = by("slot","am",pool), pm = by("slot","pm",pool), anyS = by("slot","any",pool);
+  var gr = by("kind","group",pool), pr = by("kind","private",pool), anyK = by("kind","any",pool);
+  var slot = am.length > pm.length ? "am" : "pm";
+  var kind = pr.length > gr.length ? "private" : "group";
+  var privTooFew = kind === "private" && pool.length < 2;
+  if(privTooFew) kind = "group";
+  var price = top.kinds ? top.price[slot][kind] : top.price[slot];
+  var time = top.one ? top.one : (top.kinds && kind === "private" ? top.ptime[slot] : top.time[slot]);
+  return { ranked:ranked, anyVotes:anyVotes, top:top, ry:ry, rm:rm, rn:rn, pool:pool, am:am, pm:pm, anyS:anyS, gr:gr, pr:pr, anyK:anyK, slot:slot, kind:kind, privTooFew:privTooFew, price:price, time:time };
+}
+function slotLabel(S){ return S.time; }
+function kindLabel(S){ return S.kind === "group" ? "拼团" : "包场"; }
+
+/* ---------- render dynamic ---------- */
+function update(){
+  var list = entries(), T = tally(list), S = suggest(list, T);
+  // route cards
+  ORDER.forEach(function(id){
+    var card = $("r-" + id); if(!card) return;
+    var my = state.votes[id] || 0;
+    var bs = card.querySelectorAll(".vbtn");
+    for(var i=0;i<bs.length;i++){ var val = parseInt(bs[i].getAttribute("data-v"),10); bs[i].setAttribute("aria-pressed", my === val ? "true" : "false"); }
+    var t = T[id];
+    $("score-" + id).textContent = (t.y.length || t.n.length) ? ("想去 " + t.y.length + " · 不想 " + t.n.length) : "还没人投";
+    var w = $("voters-" + id); w.textContent = "";
+    t.y.forEach(function(e){ w.appendChild(el("span","who y", nameOf(e))); });
+    t.n.forEach(function(e){ w.appendChild(el("span","who n", nameOf(e) + " 不想")); });
+  });
+  // my choices
+  var segs = document.querySelectorAll(".seg button");
+  for(var j=0;j<segs.length;j++){ var ch = segs[j].getAttribute("data-ch"), v = segs[j].getAttribute("data-val"); segs[j].setAttribute("aria-pressed", state.s[ch] === v ? "true" : "false"); }
+  renderTicket(S, T);
+  renderPeople(list, S);
+  renderRouteSum(T, S);
+  renderChoiceSum(S);
+  // notes
+  var nl = $("noteList"); nl.textContent = "";
+  list.forEach(function(e){ if(e.me) return; if(!(e.note||"").trim()) return; var n = el("div","note"); n.appendChild(el("b",null,nameOf(e))); n.appendChild(document.createTextNode(e.note)); nl.appendChild(n); });
+  // nav
+  $("prog").textContent = "要骑 " + S.ry.length + " · 考虑 " + S.rm.length;
+  // keep an open copy box current, unless someone is selecting text in it
+  var out = $("copyout");
+  if(!out.hidden && document.activeElement !== out) out.value = buildBuy();
+}
+
+function renderTicket(S, T){
+  var host = $("ticket"); host.textContent = "";
+  host.appendChild(el("div","tk-k","按目前的选择，建议买"));
+  host.appendChild(el("div","tk-route", S.top.short));
+  host.appendChild(el("div","tk-line", S.top.date + " · " + slotLabel(S) + (S.top.kinds ? " · " + kindLabel(S) : "")));
+  var big = el("div","tk-big");
+  if(S.ry.length){
+    big.appendChild(el("span","n", String(S.ry.length)));
+    big.appendChild(el("span","u","张"));
+    big.appendChild(el("span","x","× " + money(S.price)));
+    big.appendChild(el("span","eq","≈ " + money(S.price * S.ry.length)));
+  } else {
+    big.appendChild(el("span","none","还没人选「要骑」"));
+  }
+  host.appendChild(big);
+  if(S.rm.length){
+    var tot = S.ry.length + S.rm.length;
+    host.appendChild(el("div","tk-maybe","考虑中的 " + S.rm.length + " 人也去：买 " + tot + " 张，约 " + money(S.price * tot)));
+  }
+  var why = [];
+  if(S.anyVotes) why.push("路线：票数第一（想去 " + T[S.top.id].y.length + " · 不想 " + T[S.top.id].n.length + "）");
+  else why.push("路线：还没人投，先按推荐的算");
+  if(!S.top.one){
+    var st = "时段：上午 " + S.am.length + " 票 · 傍晚 " + S.pm.length + " 票";
+    if(S.am.length === S.pm.length) st += "，打平先按傍晚算";
+    why.push(st);
+  }
+  if(S.top.kinds){
+    var kt = "票种：拼团 " + S.gr.length + " 票 · 包场 " + S.pr.length + " 票";
+    if(S.privTooFew) kt += "，包场要 2 人起，先按拼团算";
+    else if(S.gr.length === S.pr.length) kt += "，打平先按拼团算（便宜）";
+    why.push(kt);
+  }
+  host.appendChild(el("div","tk-why", why.join("；") + "。"));
+  host.appendChild(el("div","tk-cut"));
+  var row = el("div","row");
+  var bk = el("a","btn","去预订页"); bk.href = (S.slot === "pm" && S.top.bookPm) ? S.top.bookPm : S.top.book; bk.target = "_blank"; bk.rel = "noopener";
+  var cp = el("button","btn ghost","复制买票清单"); cp.type = "button"; cp.id = "copybuy";
+  row.appendChild(bk); row.appendChild(cp);
+  host.appendChild(row);
+  host.appendChild(el("p","fine", S.top.buyNote));
+}
+
+function prow(host, label, arr, cls){
+  var r = el("div","prow");
+  r.appendChild(el("span","lab", label + " " + arr.length));
+  var w = el("span","names");
+  if(arr.length) arr.forEach(function(e){ w.appendChild(el("span","who " + cls, typeof e === "string" ? e : nameOf(e))); });
+  else w.appendChild(el("span","none","—"));
+  r.appendChild(w); host.appendChild(r);
+}
+
+function renderPeople(list, S){
+  var host = $("people"); host.textContent = "";
+  host.appendChild(el("h3", null, "谁骑"));
+  prow(host, "要骑", S.ry, "y");
+  prow(host, "考虑", S.rm, "s");
+  prow(host, "不骑", S.rn, "n");
+  var undecided = list.filter(function(e){ return hasAny(e) && !e.s.ride; });
+  if(undecided.length) prow(host, "没选", undecided, "u");
+  // 行程页投过票、这一页还没来的人
+  var here = {};
+  list.forEach(function(e){ if(hasAny(e)) here[e.id] = 1; });
+  var missing = [], horseFans = [];
+  Object.keys(state.mainDocs).forEach(function(id){
+    if(here[id]) return;
+    var d = state.mainDocs[id] || {};
+    var nick = typeof d.nick === "string" ? d.nick.trim() : "";
+    if(!nick) return;
+    var any = (d.v && Object.keys(d.v).length) || (d.s && Object.keys(d.s).length) || (typeof d.note === "string" && d.note.trim());
+    if(!any) return;
+    missing.push(nick);
+    if(d.s && d.s.su_horse) horseFans.push(nick);
+  });
+  var joined = list.filter(hasAny).length;
+  var left = Math.max(0, TOTAL_PEOPLE - joined);
+  if(missing.length || left){
+    var p = el("p","nudge");
+    var txt = "这页已有 " + joined + "/" + TOTAL_PEOPLE + " 人来过。";
+    if(missing.length) txt += "还没来的：" + missing.join("、") + "。";
+    if(horseFans.length) txt += "其中 " + horseFans.join("、") + " 在行程页报名了骑马，记得叫来选。";
+    p.textContent = txt;
+    host.appendChild(p);
+  }
+}
+
+function renderRouteSum(T, S){
+  var host = $("routesum"); host.textContent = "";
+  host.appendChild(el("h3", null, "路线票数"));
+  var maxY = 1; ORDER.forEach(function(id){ maxY = Math.max(maxY, T[id].y.length, T[id].n.length); });
+  S.ranked.forEach(function(id, i){
+    var t = T[id];
+    var r = el("div","sum-opt" + (S.anyVotes && i === 0 ? " lead" : ""));
+    r.appendChild(el("span","nm", R[id].short + (R[id].grp === "alt" ? " · " + R[id].warn : "")));
+    var bars = el("span","bars");
+    var by = el("span","bar y"); by.style.width = (t.y.length ? Math.max(6, Math.round(44 * t.y.length / maxY)) : 0) + "px";
+    var bn = el("span","bar n"); bn.style.width = (t.n.length ? Math.max(6, Math.round(44 * t.n.length / maxY)) : 0) + "px";
+    bars.appendChild(by); bars.appendChild(bn);
+    bars.appendChild(document.createTextNode((t.y.length || t.n.length) ? (" +" + t.y.length + " / −" + t.n.length) : " —"));
+    r.appendChild(bars); host.appendChild(r);
+  });
+}
+
+function renderChoiceSum(S){
+  var host = $("choicesum"); host.textContent = "";
+  host.appendChild(el("h3", null, "时段和票种（要骑 + 考虑中的人）"));
+  prow(host, "上午", S.am, "s");
+  prow(host, "傍晚", S.pm, "s");
+  prow(host, "都行", S.anyS, "u");
+  var hr = el("div"); hr.style.height = "8px"; host.appendChild(hr);
+  prow(host, "拼团", S.gr, "s");
+  prow(host, "包场", S.pr, "s");
+  prow(host, "都行", S.anyK, "u");
+}
+
+/* ---------- mode / status ---------- */
+function setMode(m){
+  state.mode = m;
+  var st = $("status"), tx = $("statusText"), hint = $("modehint");
+  st.className = "status " + (m === "live" ? "live" : (m === "connecting" ? "" : "local"));
+  if(m === "live"){ tx.textContent = "实时同步"; hint.textContent = "选择自动保存，大家打开页面就能看到。"; }
+  else if(m === "unconfigured"){ tx.textContent = "预览模式"; hint.textContent = "数据库还没接上，现在的选择只存在这台设备上。"; }
+  else if(m === "error"){ tx.textContent = "连不上数据库"; hint.textContent = "选择先存在这台设备上，刷新页面可以重连。"; }
+  else { tx.textContent = "连接中…"; hint.textContent = "正在连接投票数据。"; }
+  update();
+}
+
+/* ---------- saving ---------- */
+var saveTimer = null, saving = false, savePending = false;
+function scheduleSave(){
+  lsSet();
+  if(state.mode !== "live" || !state.docId) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ saveTimer = null; saveNow(); }, 600);
+}
+function saveNow(){
+  if(state.mode !== "live" || !state.docId || !fs) return;
+  if(saving){ savePending = true; return; }
+  saving = true;
+  var body = { nick: state.nick.slice(0,20), v: cleanVotes(state.votes), s: cleanS(state.s), note: state.note.slice(0,400), t: fs.serverTimestamp() };
+  fs.setDoc(fs.doc(fdb, COLL, state.docId), body).then(function(){
+    saving = false;
+    if(savePending){ savePending = false; saveNow(); }
+  }).catch(function(err){
+    saving = false;
+    var code = (err && err.code) || "未知错误";
+    if(code === "unavailable" || code === "deadline-exceeded"){ setTimeout(saveNow, 2000 + Math.random() * 1000); }
+    else { $("modehint").textContent = "保存失败（" + code + "），截图发给组织者看看。"; }
+  });
+}
+function clearOld(id, nick){
+  if(!fs || state.mode !== "live") return;
+  fs.setDoc(fs.doc(fdb, COLL, id), { nick: String(nick || "已改名").slice(0,20) || "已改名", v:{}, s:{}, note:"", t: fs.serverTimestamp() }).catch(function(){});
+}
+function applyMine(d){
+  state.votes = cleanVotes(d.v); state.s = cleanS(d.s);
+  state.note = typeof d.note === "string" ? d.note : "";
+  $("mynote").value = state.note;
+  lsSet();
+}
+
+/* ---------- name ---------- */
+function needName(){
+  $("namemsg").textContent = "先写上名字、点「确定」，再投票。";
+  var inp = $("myname");
+  try{ inp.scrollIntoView({ block:"center", behavior: smooth() }); }catch(e){}
+  inp.focus();
+}
+function confirmName(){
+  var v = $("myname").value.trim().slice(0,20), m = $("namemsg");
+  if(!v){ m.textContent = "名字不能空着。"; return; }
+  if(v === state.nick){ m.textContent = "你是「" + v + "」，可以投票了。"; return; }
+  var oldId = state.docId, oldNick = state.nick, newId = idFor(v);
+  state.nick = v; state.docId = newId;
+  var remote = state.docs[newId];
+  if(docHasAny(remote)){
+    applyMine(remote);
+    m.textContent = "找到「" + v + "」之前的选择，接着改就行。";
+  } else {
+    m.textContent = "好的，" + v + "，可以开始投了。";
+    saveNow();
+  }
+  if(oldId && oldId !== newId && state.docs[oldId]) clearOld(oldId, oldNick);
+  lsSet(); update();
+}
+$("namebtn").addEventListener("click", confirmName);
+$("myname").addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); confirmName(); } });
+
+/* ---------- interactions ---------- */
+document.addEventListener("click", function(ev){
+  var t = ev.target;
+  if(!t.closest) return;
+  var b = t.closest(".vbtn");
+  if(b){
+    if(!state.nick){ needName(); return; }
+    var id = b.parentNode.getAttribute("data-opt"), val = parseInt(b.getAttribute("data-v"),10);
+    if(state.votes[id] === val) delete state.votes[id]; else state.votes[id] = val;
+    update(); scheduleSave(); return;
+  }
+  var sb = t.closest(".seg button");
+  if(sb){
+    if(!state.nick){ needName(); return; }
+    var ch = sb.getAttribute("data-ch"), cv = sb.getAttribute("data-val");
+    if(state.s[ch] === cv) delete state.s[ch]; else state.s[ch] = cv;
+    update(); scheduleSave(); return;
+  }
+  if(t.closest("#copybuy")){ copyBuy(); return; }
+});
+$("mynote").addEventListener("input", function(e){ state.note = e.target.value; if(!state.nick){ lsSet(); return; } scheduleSave(); });
+
+/* ---------- copy the buying list ---------- */
+function buildBuy(){
+  var list = entries(), T = tally(list), S = suggest(list, T);
+  var names = function(arr){ return arr.map(nameOf).join("、"); };
+  var lines = ["【骑马 · 买票清单】"];
+  lines.push("路线：" + S.top.short);
+  lines.push("时间：" + S.top.date + " " + slotLabel(S) + (S.top.kinds ? "，" + kindLabel(S) + " " + money(S.price) + "/人" : "，" + money(S.price) + "/人"));
+  if(S.ry.length) lines.push("要骑 " + S.ry.length + " 人：" + names(S.ry) + " → 买 " + S.ry.length + " 张，约 " + money(S.price * S.ry.length));
+  else lines.push("还没人确认要骑");
+  if(S.rm.length){ var tot = S.ry.length + S.rm.length; lines.push("考虑中 " + S.rm.length + " 人：" + names(S.rm) + "（也去的话买 " + tot + " 张，约 " + money(S.price * tot) + "）"); }
+  if(S.rn.length) lines.push("不骑：" + names(S.rn));
+  lines.push("注意：" + S.top.buyNote);
+  lines.push("预订：" + ((S.slot === "pm" && S.top.bookPm) ? S.top.bookPm : S.top.book));
+  if(/^https?:/.test(location.href)) lines.push("还没选的来这里：" + location.href.split("#")[0]);
+  return lines.join("\n");
+}
+function copyBuy(){
+  var text = buildBuy(), out = $("copyout"), msg = $("copymsg");
+  out.value = text; out.hidden = false;
+  function manual(){ msg.textContent = "没能自动复制，请长按上面的文字手动复制。"; try{ out.focus(); out.select(); }catch(e){} }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ msg.textContent = "已复制，可以发到群里，或者订票时照着填。"; }, manual);
+    } else { manual(); }
+  }catch(e){ manual(); }
+}
+
+/* ---------- boot ---------- */
+async function boot(){
+  $("myname").value = state.nick; $("mynote").value = state.note;
+  if(state.nick) $("namemsg").textContent = "你是「" + state.nick + "」。不是你的话，改个名字再点「确定」。";
+  if(!FIREBASE_CONFIG.apiKey || /^PASTE/.test(FIREBASE_CONFIG.apiKey)){ setMode("unconfigured"); return; }
+  setMode("connecting");
+  try{
+    var base = "https://www.gstatic.com/firebasejs/" + FIREBASE_VERSION + "/";
+    var mods = await Promise.all([import(base + "firebase-app.js"), import(base + "firebase-firestore.js")]);
+    var app = mods[0].initializeApp(FIREBASE_CONFIG);
+    fs = mods[1]; fdb = fs.getFirestore(app);
+  }catch(e){ console.warn(e); setMode("error"); return; }
+  var first = true;
+  var timer = setTimeout(function(){ if(first) $("modehint").textContent = "暂时连不上数据库，选择先存在这台设备上。"; }, 10000);
+  fs.onSnapshot(fs.collection(fdb, COLL), function(snap){
+    clearTimeout(timer);
+    var docs = {};
+    snap.forEach(function(d){ docs[d.id] = d.data(); });
+    state.docs = docs;
+    if(first){
+      first = false;
+      setMode("live");
+      if(state.docId){
+        var mine = docs[state.docId];
+        var localHas = Object.keys(state.votes).length || Object.keys(state.s).length || state.note.trim();
+        if(docHasAny(mine)) applyMine(mine);
+        else if(localHas) saveNow();
+      }
+    } else if(state.docId && docs[state.docId] && !saveTimer && !saving){
+      applyMine(docs[state.docId]);
+    }
+    update();
+  }, function(err){
+    clearTimeout(timer);
+    setMode("error");
+    $("modehint").textContent = "连不上数据库（" + ((err && err.code) || "") + "），刷新页面再试。";
+  });
+  fs.onSnapshot(fs.collection(fdb, MAIN_COLL), function(snap){
+    var docs = {};
+    snap.forEach(function(d){ docs[d.id] = d.data(); });
+    state.mainDocs = docs;
+    update();
+  }, function(){});
+}
+
+renderStatic(); update(); boot();
+</script>
+</body>
+</html>

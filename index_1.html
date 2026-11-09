@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>波多黎各 6 人行程投票</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: one narrow column read like a trip notebook. Each day opens with a
+     blue-on-white street-tile date (the ceramic street signs of Old San Juan),
+     then its options; votes sit at the foot of every option card. */
+  --bg:#ECEEEA;
+  --surface:#FAFAF7;
+  --ink:#1C2630;
+  --muted:#5B6670;
+  --line:#D2D8D2;
+  --accent:#34577A;
+  --yes:#2E7468;
+  --no:#B0533A;
+  --rec:#94741F;
+  --accent-soft:#DDE5ED;
+  --yes-soft:#DBEAE6;
+  --no-soft:#F2E1DA;
+  --rec-soft:#EFE6CF;
+  --on-strong:#FFFFFF;
+  --display:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10171E; --surface:#17212A; --ink:#E3E7E4; --muted:#9BA7B0; --line:#2A3743;
+    --accent:#93B6D8; --yes:#71C3B4; --no:#E7987E; --rec:#D8B865;
+    --accent-soft:#1D2D3C; --yes-soft:#16302C; --no-soft:#382320; --rec-soft:#332B18;
+    --on-strong:#0E161C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10171E; --surface:#17212A; --ink:#E3E7E4; --muted:#9BA7B0; --line:#2A3743;
+  --accent:#93B6D8; --yes:#71C3B4; --no:#E7987E; --rec:#D8B865;
+  --accent-soft:#1D2D3C; --yes-soft:#16302C; --no-soft:#382320; --rec-soft:#332B18;
+  --on-strong:#0E161C;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:var(--accent);text-underline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 72px}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+
+/* hero */
+.hero{padding:30px 0 6px}
+.eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:var(--muted)}
+h1{font-size:clamp(28px,7.4vw,40px);line-height:1.15;margin:6px 0 10px;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 16px;max-width:38em}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.fact .k{font-family:var(--display);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--accent)}
+.fact .v{font-weight:700;margin-top:2px;line-height:1.4}
+.fact .s{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+@media (max-width:440px){.facts{grid-template-columns:1fr}}
+
+/* sticky day nav */
+.daynav{position:sticky;top:0;z-index:5;background:var(--bg);background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:18px -16px 0;padding:8px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.daynav::-webkit-scrollbar{display:none}
+.daynav a{flex:none;text-decoration:none;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.03em;color:var(--ink);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 11px}
+.daynav .prog{margin-left:auto;flex:none;font-size:13px;color:var(--muted);align-self:center;font-variant-numeric:tabular-nums;padding-left:8px;white-space:nowrap}
+
+section{padding-top:30px;scroll-margin-top:52px}
+h2{font-size:22px;line-height:1.3;margin:0 0 6px;text-wrap:balance}
+h2 .es{font-family:var(--display);font-weight:600;color:var(--muted);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+
+/* how-to + me */
+.steps{margin:0;padding-left:1.35em}
+.steps li{margin:3px 0}
+.me{display:grid;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.me label{font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:5px 11px;border-radius:999px;background:var(--accent-soft);line-height:1.4}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.status.live .dot{background:var(--yes)}
+.status.local .dot,.status.readonly .dot{background:var(--rec)}
+.modehint{font-size:14px;color:var(--muted);margin:0}
+
+/* summary */
+.sum-day{display:grid;grid-template-columns:5.4em 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.sum-day:first-child{border-top:0;padding-top:0}
+.sum-date{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.03em;line-height:1.25}
+.sum-date small{display:block;color:var(--muted);font-family:var(--body);font-size:12px;letter-spacing:0;font-weight:400}
+.sum-opts{display:grid;gap:5px}
+.sum-opt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px;line-height:1.35}
+.sum-opt.lead .nm{font-weight:700}
+.sum-opt .nm{overflow-wrap:anywhere}
+.bars{display:flex;gap:3px;align-items:center;font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);white-space:nowrap}
+.bar{height:8px;border-radius:4px;display:inline-block}
+.bar.y{background:var(--yes)}
+.bar.n{background:var(--no)}
+.sum-foot{font-size:14px;color:var(--muted);margin:12px 0 0}
+
+/* why + map */
+.reasons{margin:0;padding-left:1.35em}
+.reasons li{margin:6px 0}
+.mapbox{margin-top:14px}
+.mapbox svg{display:block;width:100%;max-width:540px;height:auto;margin:0 auto}
+.drive{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;margin-top:12px;font-size:14px}
+.drive div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:3px 0;border-bottom:1px dotted var(--line)}
+.drive span:last-child{font-variant-numeric:tabular-nums;color:var(--muted)}
+@media (max-width:440px){.drive{grid-template-columns:1fr}}
+.fine{font-size:13px;color:var(--muted);margin:8px 0 0}
+
+/* days */
+.day{padding-top:36px}
+.day-head{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-bottom:12px}
+.tile{width:62px;height:70px;border:2px solid var(--accent);border-radius:6px;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);color:var(--accent);box-shadow:inset 0 0 0 3px var(--surface),inset 0 0 0 4px var(--accent);line-height:1}
+.tile .dow{font-size:13px;font-weight:700;letter-spacing:.12em}
+.tile .dd{font-size:30px;font-weight:700;margin:3px 0 2px}
+.tile .mo{font-size:11px;font-weight:600;letter-spacing:.16em}
+.day-title{font-size:21px;line-height:1.3;margin:0;text-wrap:balance}
+.day-meta{font-size:13px;color:var(--muted);margin-top:2px}
+.why{margin:0 0 12px;background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:15px}
+.k{font-weight:700;margin-right:6px}
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.timeline li{display:grid;grid-template-columns:3.4em 1fr;gap:10px}
+.timeline .t{font-family:var(--display);font-weight:600;font-size:17px;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.45}
+.opts{display:grid;gap:12px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px}
+.opt.is-rec{box-shadow:inset 4px 0 0 var(--rec)}
+.opt h3{margin:0;font-size:17px;line-height:1.4;display:flex;flex-wrap:wrap;align-items:center;gap:6px;text-wrap:balance}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;line-height:1.7}
+.pill.rec{background:var(--rec-soft);color:var(--rec)}
+.pill.warn{background:var(--no-soft);color:var(--no)}
+.place{font-family:var(--display);font-weight:500;font-size:15px;letter-spacing:.04em;color:var(--muted);margin-top:1px;line-height:1.3}
+.blurb{margin:8px 0}
+.plan{font-size:14px;color:var(--muted);margin:6px 0;font-variant-numeric:tabular-nums}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0}
+.meta div{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:13px;line-height:1.6}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0;font-weight:600}
+.caution{font-size:14px;color:var(--no);margin:8px 0 0}
+.links{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:14px}
+.vote{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.vbtn{font:inherit;font-weight:700;font-size:15px;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.vbtn.yes{color:var(--yes);border-color:var(--yes)}
+.vbtn.no{color:var(--no);border-color:var(--no)}
+.vbtn.yes[aria-pressed="true"]{background:var(--yes);color:var(--on-strong)}
+.vbtn.no[aria-pressed="true"]{background:var(--no);color:var(--on-strong)}
+.vbtn:disabled{opacity:.5;cursor:default}
+.score{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.voters{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.voters:empty{display:none}
+.who{font-size:12px;border-radius:999px;padding:0 8px;line-height:1.8}
+.who.y{background:var(--yes-soft);color:var(--yes)}
+.who.n{background:var(--no-soft);color:var(--no)}
+.who.s{background:var(--accent-soft);color:var(--accent)}
+
+/* sign-ups */
+.su{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.su:first-child{border-top:0;padding-top:0}
+.su .nm{font-weight:700}
+.su .hint{font-size:13px;color:var(--muted);grid-column:1}
+.su .voters{grid-column:1 / -1;margin-top:2px}
+.subtn{font:inherit;font-weight:700;font-size:14px;min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;grid-row:1 / span 2;grid-column:2}
+.subtn[aria-pressed="true"]{background:var(--accent);color:var(--on-strong)}
+
+/* notes */
+.notes{display:grid;gap:8px;margin-top:12px}
+.note{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:15px;overflow-wrap:anywhere}
+.note b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+
+/* copy + owner */
+.btn{font:inherit;font-weight:700;font-size:15px;min-height:44px;padding:0 18px;border-radius:12px;border:0;background:var(--accent);color:var(--on-strong);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.copyout{margin-top:10px;font-size:13px;min-height:150px}
+.msg{font-size:14px;color:var(--muted)}
+.proxy{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;padding:6px 0;border-top:1px dotted var(--line)}
+.proxy button{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--no);border-radius:8px;padding:2px 10px;cursor:pointer}
+[hidden]{display:none !important}
+.namerow{flex-wrap:nowrap}
+.namerow input{flex:1;min-width:0}
+.namerow .btn{flex:none}
+
+/* notices */
+.ticks{margin:0;padding-left:1.35em}
+.ticks li{margin:7px 0}
+.closed{display:grid;gap:10px}
+.closed div{border-left:3px solid var(--no);padding:2px 0 2px 12px}
+.closed b{display:block}
+.sources{font-size:13px;color:var(--muted);columns:2;column-gap:24px;padding-left:1.2em;margin:0}
+.sources li{break-inside:avoid;margin:3px 0}
+@media (max-width:520px){.sources{columns:1}}
+footer{padding-top:36px;font-size:13px;color:var(--muted)}
+
+@media (prefers-reduced-motion: no-preference){
+  .vbtn,.subtn,.btn{transition:background-color .15s ease,color .15s ease}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Puerto Rico · 17–22 Nov 2026 · 6 personas</div>
+  <h1>波多黎各 6 人行程投票</h1>
+  <p class="lede">骨架先定好了：每天一个主活动，剩下的时间留给海边和发呆。每个选项都写了理由、车程和价格，大家点「想去」或「不想」，最后按票数定。</p>
+  <div class="facts">
+    <div class="fact">
+      <div class="k">住 · Airbnb</div>
+      <div class="v">Vega Alta 北海岸的 Airbnb</div>
+      <div class="s">具体地址和房东联系方式看群里</div>
+      <div class="s">11/17 周二 16:00 起入住 · 11/22 周日 11:00 退房</div>
+    </div>
+    <div class="fact">
+      <div class="k">车 · SJU 机场</div>
+      <div class="v">11/17 21:30 取车 → 11/22 19:00 还车</div>
+      <div class="s">机场有接驳车到租车点</div>
+      <div class="s">住处到机场约 45 分钟（估算）</div>
+    </div>
+  </div>
+</header>
+
+<nav class="daynav" aria-label="跳到某一天">
+  <a href="#vote-how">投票</a>
+  <a href="#results">结果</a>
+  <a href="#d1">18</a>
+  <a href="#d2">19</a>
+  <a href="#d3">20</a>
+  <a href="#d4">21</a>
+  <a href="#d5">22</a>
+  <a href="#nights">晚上</a>
+  <a href="#signups">报名</a>
+  <a href="#notes">留言</a>
+  <a href="horse.html">骑马投票</a>
+  <span class="prog" id="prog">已投 0/0</span>
+</nav>
+
+<section id="vote-how">
+  <h2>怎么投</h2>
+  <div class="card">
+    <ol class="steps">
+      <li>先写名字，点「确定」。不用注册；换手机或电脑时输入同一个名字，就能接着改。</li>
+      <li>每个选项点「想去」或「不想」。不点就算「都行」。</li>
+      <li>想参加的付费项目到「报名」点一下，方便订位。有顾虑写在「留言」，比如恐高、晕车。</li>
+    </ol>
+    <div class="me">
+      <label for="myname">我的名字</label>
+      <div class="row namerow">
+        <input type="text" id="myname" maxlength="20" placeholder="比如：小明" autocomplete="off" enterkeyhint="done">
+        <button type="button" class="btn" id="namebtn">确定</button>
+      </div>
+      <p class="msg" id="namemsg" aria-live="polite" style="margin:0"></p>
+      <div class="row">
+        <span class="status" id="status"><span class="dot"></span><span id="statusText">连接中…</span></span>
+      </div>
+      <p class="modehint" id="modehint">正在连接投票数据。</p>
+      <p class="fine" style="margin:0">名字就是你的身份。用别人的名字会改到别人的票，大家自觉。</p>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <h2>目前的票数</h2>
+  <p class="sub" id="voterline">还没有人投票。</p>
+  <div class="card" id="summary"></div>
+  <p class="sum-foot">排序按「想去」减「不想」。打平时看谁的「想去」多。</p>
+</section>
+
+<section id="why">
+  <h2>为什么这样排</h2>
+  <ol class="reasons">
+    <li><b>住处在北海岸正中间。</b>去机场和老城大约 45 分钟，去西北角的冲浪海岸大约 1 小时 10 分钟。所以西边、山里、本地各玩一天，回程那天顺路玩 San Juan，不走回头路。</li>
+    <li><b>每天只排一个主活动。</b>下午和晚上留给海滩、睡觉、在家做饭。六个人出门，节奏慢一点反而玩得开心。</li>
+    <li><b>有时间限制的放在对的那天。</b>冲浪和骑马都在 Isabela，合成一天；Guavate 的烤乳猪餐厅周末才有现场乐队，放周六；老城和 Piñones 离机场最近，放最后一天。</li>
+  </ol>
+  <div class="mapbox" id="map" role="img" aria-label="从 Vega Alta 住处出发到各地的车程示意图"></div>
+  <div class="drive" id="drive"></div>
+  <p class="fine">车程是估算，周末下午和上下班时间会更久。</p>
+</section>
+
+<div id="days"></div>
+
+<section id="nights">
+  <h2>晚上想做什么<span class="es">Noches</span></h2>
+  <p class="sub">可以多选。票多的那几晚我们再排进具体日子。</p>
+  <div class="opts" id="nightOpts"></div>
+</section>
+
+<section id="signups">
+  <h2>个人报名</h2>
+  <p class="sub">要按人数订的项目。点「报名」只代表你想参加，具体哪天跟着上面的投票走。</p>
+  <div class="card" id="suList"></div>
+</section>
+
+<section id="notes">
+  <h2>留言</h2>
+  <p class="sub">一个人一条，改了就覆盖。写顾虑、必去、预算都可以。</p>
+  <div class="card">
+    <label for="mynote" class="msg">我的留言</label>
+    <textarea id="mynote" maxlength="400" placeholder="比如：我恐高，滑索不去；烤乳猪必须去"></textarea>
+    <div class="notes" id="noteList"></div>
+  </div>
+</section>
+
+<section id="share">
+  <h2>复制我的选择</h2>
+  <p class="sub" id="sharehint">投完可以把自己的选择复制到群里，顺便催还没投的人。</p>
+  <div class="card">
+    <div class="row">
+      <button type="button" class="btn" id="copybtn">复制我的选择</button>
+      <span class="msg" id="copymsg" aria-live="polite"></span>
+    </div>
+    <textarea class="copyout" id="copyout" readonly hidden aria-label="我的选择（可手动复制）"></textarea>
+  </div>
+</section>
+
+
+<section id="closed">
+  <h2>这次去不了 / 不推荐</h2>
+  <p class="sub">网上常被推荐，但这周不适合，先说清楚省得有人惦记。</p>
+  <div class="closed">
+    <div><b>Río Camuy 洞穴公园</b>2023 年起一直关闭，2026 年 10 月当地新闻还在讨论由谁接手、怎么重开。</div>
+    <div><b>Cueva Ventana（窗洞）</b>网红拍照点，但波多黎各官方旅游网站目前标注「暂时关闭」。</div>
+    <div><b>生物荧光湾（Fajardo / Vieques）</b>11/24 是满月，还是超级月亮。这几天月亮越来越亮，会盖住水里的荧光；从住处去 Fajardo 来回要 3 个半小时左右。想去的人多可以投「晚上」里的那一项。</div>
+  </div>
+</section>
+
+<section id="notice">
+  <h2>出发前须知</h2>
+  <ol class="ticks">
+    <li><b>导航别输错镇。</b>Airbnb 地址里写了 Comerío，但邮编 00692 是 Vega Alta 唯一的邮编，Comerío 是山里另一个镇。晚上开车用 Airbnb App 里的地图定位，或者先找房东要定位。</li>
+    <li><b>晚到入住。</b>取车 21:30，到住处大概 22:30 以后，提前问房东怎么拿钥匙。</li>
+    <li><b>11/19 周四是公众假日（Discovery Day）。</b>银行和政府机构休息，海滩会热闹一些，冲浪课和骑马早点订。</li>
+    <li><b>11 月浪大。</b>10 月到 2 月是波多黎各冲浪最好的季节，北岸浪会比夏天大。新手一定跟教练，学校会按当天浪况换地方；游泳选平静、有人的公共海滩。</li>
+    <li><b>体重和鞋。</b>骑马（Tropical Trail Rides）体重上限 240 磅；滑索 100–270 磅，必须穿包脚鞋。每人带一双运动鞋。</li>
+    <li><b>带点现金。</b>海滩和景点的停车场常常只收现金。</li>
+    <li><b>回程日行李在车上。</b>停有人看管的停车场，东西放后备箱，别露在外面。</li>
+  </ol>
+</section>
+
+<section id="sources">
+  <h2>信息来源</h2>
+  <ul class="sources">
+    <li><a href="https://www.tropicaltrailrides.com" target="_blank" rel="noopener">Tropical Trail Rides</a></li>
+    <li><a href="https://app.advcollective.com/local-experts/moku-surf-school-jobos-puerto-rico" target="_blank" rel="noopener">Moku Surf School（Jobos）</a></li>
+    <li><a href="https://www.frommers.com/destinations/puerto-rico/active-pursuits/surfing" target="_blank" rel="noopener">Frommer's：波多黎各冲浪季</a></li>
+    <li><a href="https://app.advcollective.com/local-experts/san-juan-natural-reserve-tour-2" target="_blank" rel="noopener">Horseback Riding Manatí</a></li>
+    <li><a href="https://spurexperiences.com/experiences/beach-horseback-ride-puerto-rico" target="_blank" rel="noopener">Carabalí 海滩骑马</a></li>
+    <li><a href="https://toroverdepr.com/tour/the-monster/reserve" target="_blank" rel="noopener">Toro Verde：The Monster</a></li>
+    <li><a href="https://www.metro.pr/noticias/2025/07/20/ya-puedes-visitar-la-cueva-del-indio-en-arecibo-de-manera-gratuita" target="_blank" rel="noopener">Cueva del Indio 免费开放（Metro PR）</a></li>
+    <li><a href="https://fs.usda.gov/r08/elyunque/conditions" target="_blank" rel="noopener">El Yunque 开放情况（USDA）</a></li>
+    <li><a href="https://www.discoverpuertorico.com/article/guide-to-guavate-la-ruta-del-lechon" target="_blank" rel="noopener">Guavate 烤乳猪公路</a></li>
+    <li><a href="https://www.discoverpuertorico.com/article/guide-to-la-placita-restaurants-bars-nightlife" target="_blank" rel="noopener">La Placita 夜生活</a></li>
+    <li><a href="https://www.plateapr.com/en/where-to-eat/where-to-find-the-best-alcapurrias-in-puerto-rico" target="_blank" rel="noopener">Piñones 炸物（Platea）</a></li>
+    <li><a href="https://www.discoverpuertorico.com/article/exploring-castillo-san-felipe-del-morro-old-san-juan" target="_blank" rel="noopener">El Morro 门票</a></li>
+    <li><a href="https://www.bacardi.com/us/en/casa-bacardi/tickets/" target="_blank" rel="noopener">Casa Bacardí 门票</a></li>
+    <li><a href="https://www.discoverpuertorico.com/profile/san-juan-artisan-distillers-llc" target="_blank" rel="noopener">San Juan Artisan Distillers</a></li>
+    <li><a href="https://www.discoverpuertorico.com/regions/north/vega-alta" target="_blank" rel="noopener">Vega Alta 与 Cerro Gordo</a></li>
+    <li><a href="https://www.discoverpuertorico.com/index.php/profile/playa-la-esperanza-manati" target="_blank" rel="noopener">La Esperanza 海滩（Manatí）</a></li>
+    <li><a href="https://www.elnuevodia.com/english/news/story/three-puerto-rico-mayors-join-forces-to-boost-development-of-rio-camuy-cave-park/" target="_blank" rel="noopener">Río Camuy 关闭（El Nuevo Día）</a></li>
+    <li><a href="https://www.discoverpuertorico.com/article/visit-cueva-ventana-breathtaking-window-to-past" target="_blank" rel="noopener">Cueva Ventana 暂时关闭</a></li>
+    <li><a href="https://starwalk.space/en/news/BCD688FF-B3D7-EFE2-8680-B18F9F94C3BB" target="_blank" rel="noopener">2026 年 11 月满月</a></li>
+    <li><a href="https://www.officeholidays.com/holidays/puerto-rico/puerto-rico-discovery-day" target="_blank" rel="noopener">Discovery Day 假日</a></li>
+  </ul>
+</section>
+
+<footer>价格和开放时间来自 2026 年 11 月能查到的网上信息，订之前以官网为准。</footer>
+</div>
+
+<script type="module">
+/* ===== Firebase 配置：把控制台给的 firebaseConfig 填在这里 ===== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCturkZXzye-b-dyPgIOlemP67yLYDlMdg",
+  authDomain: "san-jose-travel-plan.firebaseapp.com",
+  projectId: "san-jose-travel-plan",
+  storageBucket: "san-jose-travel-plan.firebasestorage.app",
+  messagingSenderId: "1070064359910",
+  appId: "1:1070064359910:web:72e7bbf14a29237c33de27"
+};
+const FIREBASE_VERSION = "10.12.2";
+
+/* ---------- content ---------- */
+var TOTAL_PEOPLE = 6;
+
+var DAYS = [
+  { id:"d0", md:"11/17", cn:"周二", es:"MAR", dd:"17", title:"抵达夜", fixed:true,
+    lines:[["21:30","SJU 机场取车，坐接驳车到租车点"],["22:15","上 PR-22 高速往西开"],["23:00","到住处，洗洗睡"]],
+    why:"提前跟房东确认晚到怎么拿钥匙；路上买好水和第二天的早餐。导航看「出发前须知」第 1 条。" },
+
+  { id:"d1", md:"11/18", cn:"周三", es:"MIÉ", dd:"18", title:"慢启动，家门口的海",
+    why:"前一晚快 11 点才到，第一天不开远路：睡饱、去超市补给，下午就近下海、看日落。",
+    options:[
+      { id:"d1a", short:"Cerro Gordo 海滩", rec:true, name:"Cerro Gordo 海滩 + 日落", place:"Balneario Cerro Gordo · Vega Alta",
+        blurb:"Vega Alta 最有名的公共海滩，离住处很近。水比较平静，椰子树下有阴凉和野餐设施，本地人周末常整天待在这里；周三人少。",
+        meta:[["车程","约 10 分钟"],["费用","停车，带现金"],["时长","下午"]] },
+      { id:"d1b", short:"本地朗姆酒庄", name:"本地朗姆酒庄 + 海滩日落", place:"San Juan Artisan Distillers · Vega Alta",
+        blurb:"就在 Vega Alta。这是全岛唯一自己种甘蔗、用甘蔗汁酿朗姆酒的庄园。90 分钟导览，有欢迎鸡尾酒和品鉴，出来再去 Cerro Gordo 看日落。",
+        meta:[["车程","约 10–15 分钟"],["费用","约 $80/人起"],["时长","2 小时 + 海滩"]],
+        caution:"开车的人只能尝几口。",
+        links:[{t:"酒庄介绍",u:"https://www.discoverpuertorico.com/profile/san-juan-artisan-distillers-llc"}] },
+      { id:"d1c", short:"Manatí 天然泳池", name:"Manatí 天然泳池", place:"Playa La Esperanza · Mar Chiquita",
+        blurb:"Hacienda La Esperanza 自然保护区里的海滩，有礁石围出来的平静水池（La Poza de las Mujeres），去海滩不需要预约导览。顺路看 Mar Chiquita 的月牙形礁石海湾。",
+        meta:[["车程","约 25–30 分钟"],["费用","免费"],["时长","半天"]],
+        caution:"Mar Chiquita 有的季节水流很急，别靠近礁石缺口游泳。" }
+    ] },
+
+  { id:"d2", md:"11/19", cn:"周四", es:"JUE", dd:"19", title:"冲浪 + 海边骑马", holiday:"公众假日 Discovery Day",
+    why:"有人想冲浪，有人想海边骑马。两件事放在同一天、同一片海岸，一次满足。这天是公众假日，海滩会热闹些，课程和骑马要提前订。",
+    options:[
+      { id:"d2a", short:"Isabela 冲浪 + 骑马", rec:true, name:"Isabela 一日：Jobos 冲浪 + 日落骑马", place:"Playa Jobos · Tropical Trail Rides",
+        blurb:"上午在 Jobos 海滩上冲浪课，这里是西北岸的冲浪中心，海滩上就有冲浪学校。下午骑 Tropical Trail Rides 的日落场：2 小时，从 Shacks Beach 出发，穿过杏树林和松林，一路走到西北角的 Survival Beach，新手也会分组教。不冲浪、不骑马的人在海边吃喝、游泳、拍照，两个地方开车很近。",
+        plan:"08:00 出发 → 09:30 冲浪课 → 12:00 海边午饭 → 15:30 左右日落骑马（时间随季节调整）→ 晚饭后开回",
+        meta:[["车程","约 1 小时 10 分"],["冲浪课","约 $100/人起"],["骑马","$85–120/人"]],
+        caution:"骑马体重上限 240 磅（约 109 公斤），严格执行。",
+        links:[{t:"骑马路线投票（看风景、算票）",u:"horse.html"},{t:"Tropical Trail Rides",u:"https://www.tropicaltrailrides.com"},{t:"Moku 冲浪学校",u:"https://app.advcollective.com/local-experts/moku-surf-school-jobos-puerto-rico"}] },
+      { id:"d2b", short:"Manatí 骑马（不跑远）", name:"不跑远：Manatí 海边骑马", place:"Horseback Riding Manatí",
+        blurb:"离住处约 25 分钟。Beach Trail Tour 骑 2 小时，穿过 Hacienda La Esperanza 的山谷、树林和湿地，最后骑到海边，中间休息两次。冲浪改到最后一天在 San Juan 的 Isla Verde 上课（约 $80/人，2 小时）。这天其余时间休息。",
+        meta:[["车程","约 25 分钟"],["费用","需要询价"],["时长","半天"]],
+        caution:"网上资料少，订之前打电话确认价格和体重限制。" },
+      { id:"d2c", short:"东北角 冲浪 + 雨林骑马", name:"东北角一日：Luquillo 冲浪 + 雨林海滩骑马", place:"La Pared · Carabalí Rainforest Park",
+        blurb:"Luquillo 的 La Pared 海滩冲浪课（约 $80/人），Carabalí 2.5 小时骑马：穿过雨林、沿着海滩、走到 Mameyes 河（约 $165/人起）。晚饭吃 Luquillo 海边的小吃亭。",
+        meta:[["车程","约 1 小时 30 分（最远）"],["费用","两项约 $245/人起"],["时长","全天"]] }
+    ] },
+
+  { id:"d3", md:"11/20", cn:"周五", es:"VIE", dd:"20", title:"进山，看海岸，或者躺平",
+    why:"连玩两天后给大家选：想刺激就进山，想看风景去海边洞穴，想休息就整天不出门。热门景点平日人少。",
+    options:[
+      { id:"d3a", short:"Toro Verde 滑索", name:"The Monster 超长滑索", place:"Toro Verde · Orocovis",
+        blurb:"中部山区的冒险公园。The Monster 全长约 2.5 公里，官方说是美洲最长，从山顶飞过整片山谷。上午去，下午回来休息。",
+        meta:[["车程","约 1 小时"],["费用","$114.99/人 + 税费"],["时长","半天"]],
+        caution:"体重 100–270 磅，必须穿包脚鞋。恐高的人可以在下面等。",
+        links:[{t:"Toro Verde 预订",u:"https://toroverdepr.com/tour/the-monster/reserve"}] },
+      { id:"d3b", short:"Cueva del Indio", name:"Arecibo 海边洞穴", place:"Cueva del Indio · Arecibo",
+        blurb:"海边礁石上的洞穴，有泰诺人留下的岩画，旁边是一排海蚀拱和悬崖，景色很有冲击力。2025 年起免费进入，旁边私人停车场收现金。顺路吃海鲜。",
+        meta:[["车程","约 40 分钟"],["费用","免费，停车约 $10 现金"],["时长","半天"]],
+        caution:"没有树荫，岩石湿滑，穿防滑鞋、带水。" },
+      { id:"d3c", short:"El Yunque 雨林", name:"El Yunque 雨林 + Luquillo 小吃亭", place:"El Yunque National Forest",
+        blurb:"美国国家森林里唯一的热带雨林。PR-191 主游览区目前免费、不用预约，8:00–17:00 开放。下山后去 Luquillo 海边的小吃亭吃炸物。",
+        meta:[["车程","约 1 小时 30 分（单程）"],["费用","免费"],["时长","全天"]],
+        links:[{t:"开放情况",u:"https://fs.usda.gov/r08/elyunque/conditions"}] },
+      { id:"d3d", short:"躺平日", name:"躺平日", place:"Día libre",
+        blurb:"睡到自然醒，去海滩、看书、补觉。傍晚一起去超市买菜，在家做一顿饭。",
+        meta:[["车程","几乎不开"],["费用","买菜钱"],["时长","全天"]] }
+    ] },
+
+  { id:"d4", md:"11/21", cn:"周六", es:"SÁB", dd:"21", title:"周六的本地味道",
+    why:"周末是波多黎各人出门吃喝跳舞的时候。Guavate 的烤乳猪餐厅周末才有现场乐队，所以放在周六。",
+    options:[
+      { id:"d4a", short:"Guavate 烤乳猪", rec:true, name:"Guavate 烤乳猪公路", place:"La Ruta del Lechón · Cayey",
+        blurb:"山里 PR-184 公路两边都是 lechonera（烤全猪餐厅），周末很多家有现场萨尔萨乐队，吃完就有人跳舞，整条路像一场派对。点烤猪肉、arroz con gandules（鸽豆饭）、mofongo（芭蕉泥）。",
+        plan:"11:00 出发 → 12:15 到，边吃边听歌 → 下午开回 → 晚上在家",
+        meta:[["车程","约 1 小时 15 分"],["费用","吃饭为主"],["时长","大半天"]],
+        caution:"山路弯多，开车的人别喝。",
+        links:[{t:"Guavate 介绍",u:"https://www.discoverpuertorico.com/article/guide-to-guavate-la-ruta-del-lechon"}] },
+      { id:"d4b", short:"再去 Jobos 冲浪", name:"冲浪党再去一次 Jobos", place:"Playa Jobos · Isabela",
+        blurb:"周四冲浪上瘾的话，周六回 Jobos 租板或者上第二节课；不冲浪的人在海边躺着、吃海鲜。",
+        meta:[["车程","约 1 小时 10 分"],["费用","租板或上课"],["时长","全天"]] }
+    ] },
+
+  { id:"d5", md:"11/22", cn:"周日", es:"DOM", dd:"22", title:"回程日，顺路玩 San Juan",
+    why:"11:00 退房，19:00 前还车。老城和 Piñones 都在机场附近，这一天边玩边往机场靠。",
+    options:[
+      { id:"d5a", short:"老城 + Piñones", rec:true, name:"老城 + Piñones 海边炸物", place:"Viejo San Juan · Piñones",
+        blurb:"先去老城：El Morro 城堡门票 $10/人（16 岁以上），24 小时内还能进 San Cristóbal 城堡。城堡前的大草坪，本地人常来放风筝、野餐。午饭后逛彩色街道。下午开到 Piñones，PR-187 路边一排小吃亭卖 alcapurrias、bacalaítos，有的店周日有 bomba 鼓乐现场。最后十几分钟开到机场还车。",
+        plan:"11:00 退房 → 11:45 老城 → 15:30 Piñones → 18:30 还车",
+        meta:[["车程","约 40 分 + 30 分"],["费用","门票 $10 + 吃"],["时长","全天"]],
+        links:[{t:"El Morro",u:"https://www.discoverpuertorico.com/article/exploring-castillo-san-felipe-del-morro-old-san-juan"}] },
+      { id:"d5b", short:"百加得 + 老城", name:"百加得酒厂 + 老城", place:"Casa Bacardí · Cataño",
+        blurb:"老城对面的 Cataño，世界上最大的高端朗姆酒厂。Legacy Tour 50 分钟，含一杯欢迎鸡尾酒，18 岁以上。之后去老城吃饭逛街。",
+        meta:[["车程","约 35 分钟"],["费用","$40/人 + 税"],["时长","大半天"]],
+        links:[{t:"门票",u:"https://www.bacardi.com/us/en/casa-bacardi/tickets/"}] },
+      { id:"d5c", short:"Isla Verde 冲浪 + Piñones", name:"Isla Verde 海滩 + 冲浪课", place:"Isla Verde · Piñones",
+        blurb:"机场旁边的城市海滩，最不赶。想再冲一次浪可以上 2 小时课（约 $80/人），之后去 Piñones 吃炸物、还车。19 号选「不跑远」的话，冲浪就在这天。",
+        meta:[["车程","约 45 分钟"],["费用","冲浪约 $80/人"],["时长","全天"]] }
+    ] }
+];
+
+var NIGHTS = [
+  { id:"n1", short:"在家做饭夜", name:"在家做饭夜", place:"住处",
+    blurb:"去超市买芭蕉、牛油果、海鲜和朗姆酒，六个人在家一起做饭聊天。最省钱，也最放松。",
+    meta:[["车程","不开车"],["费用","买菜钱"]] },
+  { id:"n2", short:"La Placita 萨尔萨夜", name:"La Placita 萨尔萨夜", place:"La Placita de Santurce · San Juan",
+    blurb:"白天是老菜市场，晚上 6 点以后周边变成露天派对：萨尔萨乐队、街上跳舞、炸物和鸡尾酒。周四到周六最热闹，适合周五或周六晚上。",
+    meta:[["车程","约 40 分钟"],["费用","吃喝自理"]],
+    caution:"需要一位整晚不喝酒的司机。" },
+  { id:"n3", short:"荧光湾夜划", warn:"这周不推荐", name:"生物荧光湾夜划皮艇", place:"Laguna Grande · Fajardo",
+    blurb:"晚上划皮艇进潟湖，桨一动水就发光，约 $58–104/人。但 11/24 是满月，这几天月光会盖住荧光，来回车程 3 个半小时左右。",
+    meta:[["车程","约 1 小时 45 分（单程）"],["费用","约 $58–104/人"]] },
+  { id:"n4", short:"晚上不安排", name:"晚上不安排", place:"Descanso",
+    blurb:"早点睡，第二天有精神。",
+    meta:[["车程","无"],["费用","无"]] }
+];
+
+var SIGNUPS = [
+  { id:"su_surf", name:"冲浪课", hint:"Jobos 约 $100/人起 · Isla Verde / Luquillo 约 $80/人" },
+  { id:"su_horse", name:"海边骑马", hint:"Tropical Trail Rides 拼团 $85/人、包场 $120/人 · 选路线和时段去「骑马投票」页" },
+  { id:"su_zip", name:"The Monster 滑索", hint:"$114.99/人 + 税费 · 100–270 磅" },
+  { id:"su_rum", name:"本地朗姆酒庄导览", hint:"Vega Alta · 约 $80/人起" },
+  { id:"su_bacardi", name:"Casa Bacardí 酒厂", hint:"$40/人 + 税 · 18 岁以上" }
+];
+
+var MAP_PLACES = [
+  { n:"住处", s:"Vega Alta", lon:-66.34, lat:18.475, home:true, lx:0, ly:-27, a:"middle" },
+  { n:"Isabela", s:"1 小时 10 分", lon:-67.07, lat:18.505, lx:0, ly:-27, a:"middle" },
+  { n:"Arecibo", s:"40 分", lon:-66.64, lat:18.485, lx:0, ly:-27, a:"middle" },
+  { n:"Manatí", s:"25 分", lon:-66.52, lat:18.47, lx:0, ly:17, a:"middle" },
+  { n:"老城 · 机场", s:"40–55 分", lon:-66.06, lat:18.455, lx:-4, ly:-27, a:"start" },
+  { n:"Toro Verde", s:"1 小时", lon:-66.42, lat:18.25, lx:0, ly:17, a:"middle" },
+  { n:"Guavate", s:"1 小时 15 分", lon:-66.07, lat:18.13, lx:9, ly:10, a:"start" },
+  { n:"El Yunque · Fajardo", s:"1.5 小时以上", lon:-65.72, lat:18.35, lx:-4, ly:18, a:"end" }
+];
+var COAST = [[-67.16,18.52],[-66.90,18.49],[-66.70,18.49],[-66.45,18.49],[-66.25,18.48],[-66.10,18.47],[-65.90,18.45],[-65.62,18.38],[-65.60,18.25],[-65.75,18.12],[-65.85,17.99],[-66.10,17.95],[-66.40,17.95],[-66.62,17.97],[-66.90,17.95],[-67.20,17.93],[-67.18,18.10],[-67.16,18.21],[-67.27,18.36]];
+var DRIVES = [
+  ["Cerro Gordo 海滩",10],["朗姆酒庄",12],["Dorado",15],["Manatí 海滩",25],["Arecibo 洞穴",40],["老城 / Bacardí",40],
+  ["SJU 机场",45],["Piñones",50],["Toro Verde",60],["Isabela / Jobos",70],["Guavate",75],["El Yunque",90],["Fajardo 荧光湾",105]
+];
+
+/* ---------- lookup ---------- */
+var OPT = {}, OPT_ORDER = [], DAY_OF = {};
+DAYS.forEach(function(d){ (d.options||[]).forEach(function(o){ OPT[o.id]=o; OPT_ORDER.push(o.id); DAY_OF[o.id]=d; }); });
+NIGHTS.forEach(function(o){ OPT[o.id]=o; OPT_ORDER.push(o.id); DAY_OF[o.id]={ md:"晚上", cn:"", id:"nights" }; });
+var SU = {}; SIGNUPS.forEach(function(s){ SU[s.id]=s; });
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text!=null) e.textContent = text; return e; }
+function cleanVotes(v){ var o={}; Object.keys(v||{}).forEach(function(k){ if(OPT[k] && (v[k]===1 || v[k]===-1)) o[k]=v[k]; }); return o; }
+function cleanSignups(s){ var o={}; Object.keys(s||{}).forEach(function(k){ if(SU[k] && s[k]) o[k]=true; }); return o; }
+function hash36(str){ var h=5381; for(var i=0;i<str.length;i++){ h=((h<<5)+h+str.charCodeAt(i))|0; } return (h>>>0).toString(36); }
+
+/* ---------- static render ---------- */
+function optionCard(o){
+  var a = el("article", "opt" + (o.rec ? " is-rec" : "")); a.id = "opt-" + o.id;
+  var h = el("h3", null, o.name);
+  if(o.rec) h.appendChild(el("span", "pill rec", "推荐"));
+  if(o.warn) h.appendChild(el("span", "pill warn", o.warn));
+  a.appendChild(h);
+  a.appendChild(el("div", "place", o.place));
+  a.appendChild(el("p", "blurb", o.blurb));
+  if(o.plan){ var p = el("p","plan"); p.appendChild(el("span","k","节奏")); p.appendChild(document.createTextNode(o.plan)); a.appendChild(p); }
+  if(o.meta){ var dl = el("dl","meta"); o.meta.forEach(function(m){ var d=el("div"); d.appendChild(el("dt",null,m[0])); d.appendChild(el("dd",null,m[1])); dl.appendChild(d); }); a.appendChild(dl); }
+  if(o.caution){ var c = el("p","caution"); c.appendChild(el("span","k","注意")); c.appendChild(document.createTextNode(o.caution)); a.appendChild(c); }
+  if(o.links){ var l = el("p","links"); o.links.forEach(function(x){ var an = el("a",null,x.t); an.href=x.u; an.target="_blank"; an.rel="noopener"; l.appendChild(an); }); a.appendChild(l); }
+  var v = el("div","vote"); v.setAttribute("data-opt", o.id);
+  var by = el("button","vbtn yes","想去"); by.type="button"; by.setAttribute("data-v","1"); by.setAttribute("aria-pressed","false");
+  var bn = el("button","vbtn no","不想"); bn.type="button"; bn.setAttribute("data-v","-1"); bn.setAttribute("aria-pressed","false");
+  var sc = el("span","score"); sc.id = "score-" + o.id;
+  v.appendChild(by); v.appendChild(bn); v.appendChild(sc);
+  a.appendChild(v);
+  var w = el("div","voters"); w.id = "voters-" + o.id; a.appendChild(w);
+  return a;
+}
+
+function renderDays(){
+  var host = $("days");
+  DAYS.forEach(function(d){
+    var s = el("section","day"); s.id = d.id;
+    var head = el("div","day-head");
+    var tile = el("div","tile"); tile.setAttribute("aria-hidden","true");
+    tile.appendChild(el("span","dow",d.es)); tile.appendChild(el("span","dd",d.dd)); tile.appendChild(el("span","mo","NOV"));
+    var t = el("div");
+    t.appendChild(el("h2","day-title",d.title));
+    t.appendChild(el("div","day-meta", d.md + " " + d.cn + (d.holiday ? " · " + d.holiday : "") + (d.fixed ? " · 不用投" : " · 选一个")));
+    head.appendChild(tile); head.appendChild(t); s.appendChild(head);
+    if(d.fixed){
+      var card = el("div","card");
+      var ul = el("ul","timeline");
+      d.lines.forEach(function(x){ var li=el("li"); li.appendChild(el("span","t",x[0])); li.appendChild(el("span",null,x[1])); ul.appendChild(li); });
+      card.appendChild(ul);
+      var pw = el("p","why"); pw.style.margin="12px 0 0"; pw.textContent = d.why; card.appendChild(pw);
+      s.appendChild(card);
+    } else {
+      var why = el("p","why"); why.appendChild(el("span","k","为什么")); why.appendChild(document.createTextNode(d.why)); s.appendChild(why);
+      var box = el("div","opts"); d.options.forEach(function(o){ box.appendChild(optionCard(o)); }); s.appendChild(box);
+    }
+    host.appendChild(s);
+  });
+  var nb = $("nightOpts"); NIGHTS.forEach(function(o){ nb.appendChild(optionCard(o)); });
+}
+
+function renderSignups(){
+  var host = $("suList");
+  SIGNUPS.forEach(function(s){
+    var row = el("div","su");
+    row.appendChild(el("div","nm",s.name));
+    var b = el("button","subtn","报名"); b.type="button"; b.setAttribute("data-su", s.id); b.setAttribute("aria-pressed","false"); b.id = "subtn-" + s.id;
+    row.appendChild(b);
+    row.appendChild(el("div","hint",s.hint));
+    var w = el("div","voters"); w.id = "suwho-" + s.id; row.appendChild(w);
+    host.appendChild(row);
+  });
+}
+
+function renderMap(){
+  var W=400, padX=20, top=34, lonMin=-67.32, lonMax=-65.55, latMax=18.58, latMin=17.88;
+  var kx = Math.cos(18.2*Math.PI/180), sc = (W-2*padX)/((lonMax-lonMin)*kx);
+  var H = Math.round(top + (latMax-latMin)*sc + 12);
+  function P(lon,lat){ return [padX+(lon-lonMin)*kx*sc, top+(latMax-lat)*sc]; }
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(NS,"svg"); svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  function mk(tag, attrs){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+  var pts = COAST.map(function(c){ var p=P(c[0],c[1]); return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+  svg.appendChild(mk("polygon",{points:pts, fill:"var(--surface)", stroke:"var(--line)", "stroke-width":"1.5", "stroke-linejoin":"round"}));
+  var home = MAP_PLACES[0], hp = P(home.lon, home.lat);
+  MAP_PLACES.forEach(function(m){ if(m.home) return; var p=P(m.lon,m.lat);
+    svg.appendChild(mk("line",{x1:hp[0],y1:hp[1],x2:p[0],y2:p[1],stroke:"var(--accent)","stroke-width":"1","stroke-dasharray":"3 3",opacity:"0.55"})); });
+  MAP_PLACES.forEach(function(m){
+    var p=P(m.lon,m.lat);
+    if(m.home){ svg.appendChild(mk("circle",{cx:p[0],cy:p[1],r:"7",fill:"var(--accent)",stroke:"var(--surface)","stroke-width":"2.5"})); }
+    else { svg.appendChild(mk("circle",{cx:p[0],cy:p[1],r:"4",fill:"var(--surface)",stroke:"var(--accent)","stroke-width":"2"})); }
+    var t1 = mk("text",{x:p[0]+m.lx, y:p[1]+m.ly, "text-anchor":m.a, "font-size":"12.5", "font-weight":"700", fill:"var(--ink)"}); t1.textContent = m.n;
+    var t2 = mk("text",{x:p[0]+m.lx, y:p[1]+m.ly+13, "text-anchor":m.a, "font-size":"11", fill:"var(--muted)"}); t2.textContent = m.s;
+    svg.appendChild(t1); svg.appendChild(t2);
+  });
+  $("map").appendChild(svg);
+  var dv = $("drive");
+  DRIVES.forEach(function(d){ var r=el("div"); r.appendChild(el("span",null,d[0])); r.appendChild(el("span",null,"约 "+d[1]+" 分钟")); dv.appendChild(r); });
+}
+
+/* ---------- people / tallies ---------- */
+function tally(list){
+  var r = {};
+  OPT_ORDER.forEach(function(id){ r[id] = { y:[], n:[] }; });
+  list.forEach(function(e){ Object.keys(e.v||{}).forEach(function(k){ if(!r[k]) return; if(e.v[k]===1) r[k].y.push(e); else if(e.v[k]===-1) r[k].n.push(e); }); });
+  return r;
+}
+
+function update(){
+  var list = entries(), T = tally(list);
+  // option cards
+  OPT_ORDER.forEach(function(id){
+    var card = $("opt-"+id); if(!card) return;
+    var my = state.votes[id] || 0;
+    var bs = card.querySelectorAll(".vbtn");
+    for(var i=0;i<bs.length;i++){ var val = parseInt(bs[i].getAttribute("data-v"),10); bs[i].setAttribute("aria-pressed", my===val ? "true" : "false"); }
+    var t = T[id], sc = $("score-"+id);
+    sc.textContent = (t.y.length||t.n.length) ? ("想去 "+t.y.length+" · 不想 "+t.n.length) : "还没人投";
+    var w = $("voters-"+id); w.textContent = "";
+    t.y.forEach(function(e){ w.appendChild(el("span","who y", nameOf(e))); });
+    t.n.forEach(function(e){ w.appendChild(el("span","who n", nameOf(e) + " 不想")); });
+  });
+  // sign-ups
+  SIGNUPS.forEach(function(s){
+    var b = $("subtn-"+s.id); var on = !!state.signups[s.id];
+    b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "已报名" : "报名";
+    var w = $("suwho-"+s.id); w.textContent = "";
+    var who = list.filter(function(e){ return e.s && e.s[s.id]; });
+    if(who.length){ w.appendChild(el("span","who s", who.length + " 人")); who.forEach(function(e){ w.appendChild(el("span","who s", nameOf(e))); }); }
+  });
+  // notes
+  var nl = $("noteList"); nl.textContent = "";
+  list.forEach(function(e){ if(e.me) return; if(!(e.note||"").trim()) return; var n=el("div","note"); n.appendChild(el("b",null,nameOf(e))); n.appendChild(document.createTextNode(e.note)); nl.appendChild(n); });
+  // summary
+  renderSummary(list, T);
+  // progress
+  var mine = Object.keys(state.votes).length;
+  $("prog").textContent = "已投 " + mine + "/" + OPT_ORDER.length;
+}
+
+function renderSummary(list, T){
+  var host = $("summary"); host.textContent = "";
+  var voters = list.filter(hasAny);
+  var vl = $("voterline");
+  if(!voters.length){ vl.textContent = "还没有人投票，你来投第一票。"; }
+  else { vl.textContent = "已有 " + voters.length + "/" + TOTAL_PEOPLE + " 人参与：" + voters.map(nameOf).join("、"); }
+  var groups = DAYS.filter(function(d){ return d.options; }).map(function(d){ return { md:d.md, cn:d.cn, ids:d.options.map(function(o){return o.id;}) }; });
+  groups.push({ md:"晚上", cn:"可多选", ids:NIGHTS.map(function(o){return o.id;}) });
+  var maxY = 1; OPT_ORDER.forEach(function(id){ maxY = Math.max(maxY, T[id].y.length, T[id].n.length); });
+  groups.forEach(function(g){
+    var row = el("div","sum-day");
+    var dt = el("div","sum-date", g.md); dt.appendChild(el("small",null,g.cn)); row.appendChild(dt);
+    var opts = el("div","sum-opts");
+    var ranked = g.ids.slice().sort(function(a,b){ var sa=T[a].y.length-T[a].n.length, sb=T[b].y.length-T[b].n.length; if(sb!==sa) return sb-sa; if(T[b].y.length!==T[a].y.length) return T[b].y.length-T[a].y.length; return g.ids.indexOf(a)-g.ids.indexOf(b); });
+    var anyVotes = g.ids.some(function(id){ return T[id].y.length||T[id].n.length; });
+    ranked.forEach(function(id, i){
+      var o = OPT[id], t = T[id];
+      var r = el("div","sum-opt" + (anyVotes && i===0 && (t.y.length-t.n.length)>0 ? " lead" : ""));
+      r.appendChild(el("span","nm", o.short));
+      var bars = el("span","bars");
+      var by = el("span","bar y"); by.style.width = (t.y.length ? Math.max(6, Math.round(44*t.y.length/maxY)) : 0) + "px";
+      var bn = el("span","bar n"); bn.style.width = (t.n.length ? Math.max(6, Math.round(44*t.n.length/maxY)) : 0) + "px";
+      bars.appendChild(by); bars.appendChild(bn);
+      bars.appendChild(document.createTextNode(t.y.length||t.n.length ? (" +"+t.y.length+" / −"+t.n.length) : " —"));
+      r.appendChild(bars); opts.appendChild(r);
+    });
+    row.appendChild(opts); host.appendChild(row);
+  });
+  var sus = SIGNUPS.map(function(s){ var c = list.filter(function(e){ return e.s && e.s[s.id]; }).length; return s.name + " " + c + " 人"; });
+  var f = el("div","sum-day"); var dt2 = el("div","sum-date","报名"); dt2.appendChild(el("small",null,"人数")); f.appendChild(dt2);
+  f.appendChild(el("div","msg", sus.join(" · "))); host.appendChild(f);
+}
+
+
+/* ---------- state ---------- */
+var LS_KEY = "pr6-trip-site-v1";
+var state = { mode:"connecting", nick:"", docId:null, votes:{}, signups:{}, note:"", docs:{} };
+var fs = null, fdb = null;
+function idFor(n){ return "n-" + hash36(String(n).trim().toLowerCase()); }
+function lsGet(){ try{ var r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function lsSet(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({ nick:state.nick, votes:state.votes, signups:state.signups, note:state.note })); }catch(e){} }
+(function restoreLocal(){
+  var s = lsGet();
+  if(s){ state.nick = s.nick||""; state.votes = cleanVotes(s.votes); state.signups = cleanSignups(s.signups); state.note = s.note||""; if(state.nick) state.docId = idFor(state.nick); }
+})();
+
+/* ---------- people ---------- */
+function entries(){
+  var list = [];
+  Object.keys(state.docs).forEach(function(id){
+    if(id === state.docId) return;
+    var d = state.docs[id] || {};
+    list.push({ id:id, nick: typeof d.nick === "string" ? d.nick : "", v:cleanVotes(d.v), s:cleanSignups(d.s), note: typeof d.note === "string" ? d.note : "" });
+  });
+  list.unshift({ id: state.docId || "__me", nick: state.nick, v: state.votes, s: state.signups, note: state.note, me:true });
+  return list;
+}
+function nameOf(e){ return e.me ? (state.nick || "我") : (e.nick || "朋友"); }
+function hasAny(e){ return Object.keys(e.v||{}).length>0 || Object.keys(e.s||{}).length>0 || (e.note||"").trim().length>0; }
+function docHasAny(d){ return !!d && hasAny({ v:cleanVotes(d.v), s:cleanSignups(d.s), note: typeof d.note === "string" ? d.note : "" }); }
+
+/* ---------- mode / status ---------- */
+function setMode(m){
+  state.mode = m;
+  var st = $("status"), tx = $("statusText"), hint = $("modehint");
+  st.className = "status " + (m === "live" ? "live" : (m === "connecting" ? "" : "local"));
+  if(m === "live"){ tx.textContent = "实时同步"; hint.textContent = "投票自动保存，大家打开页面就能看到。"; }
+  else if(m === "unconfigured"){ tx.textContent = "预览模式"; hint.textContent = "数据库还没接上，现在的选择只存在这台设备上。"; }
+  else if(m === "error"){ tx.textContent = "连不上数据库"; hint.textContent = "选择先存在这台设备上，刷新页面可以重连。"; }
+  else { tx.textContent = "连接中…"; hint.textContent = "正在连接投票数据。"; }
+  update();
+}
+
+/* ---------- saving ---------- */
+var saveTimer = null, saving = false, savePending = false;
+function scheduleSave(){
+  lsSet();
+  if(state.mode !== "live" || !state.docId) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ saveTimer = null; saveNow(); }, 600);
+}
+function saveNow(){
+  if(state.mode !== "live" || !state.docId || !fs) return;
+  if(saving){ savePending = true; return; }
+  saving = true;
+  var body = { nick: state.nick.slice(0,20), v: cleanVotes(state.votes), s: cleanSignups(state.signups), note: state.note.slice(0,400), t: fs.serverTimestamp() };
+  fs.setDoc(fs.doc(fdb, "votes", state.docId), body).then(function(){
+    saving = false;
+    if(savePending){ savePending = false; saveNow(); }
+  }).catch(function(err){
+    saving = false;
+    var code = (err && err.code) || "未知错误";
+    if(code === "unavailable" || code === "deadline-exceeded"){ setTimeout(saveNow, 2000 + Math.random()*1000); }
+    else { $("modehint").textContent = "保存失败（" + code + "），截图发给组织者看看。"; }
+  });
+}
+function clearOld(id, nick){
+  if(!fs || state.mode !== "live") return;
+  fs.setDoc(fs.doc(fdb, "votes", id), { nick: String(nick || "已改名").slice(0,20) || "已改名", v:{}, s:{}, note:"", t: fs.serverTimestamp() }).catch(function(){});
+}
+function applyMine(d){
+  state.votes = cleanVotes(d.v); state.signups = cleanSignups(d.s);
+  state.note = typeof d.note === "string" ? d.note : "";
+  $("mynote").value = state.note;
+  lsSet();
+}
+
+/* ---------- name ---------- */
+function needName(){
+  $("namemsg").textContent = "先写上名字、点「确定」，再投票。";
+  var inp = $("myname");
+  try{ inp.scrollIntoView({ block:"center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }catch(e){}
+  inp.focus();
+}
+function confirmName(){
+  var v = $("myname").value.trim().slice(0,20), m = $("namemsg");
+  if(!v){ m.textContent = "名字不能空着。"; return; }
+  if(v === state.nick){ m.textContent = "你是「" + v + "」，可以投票了。"; return; }
+  var oldId = state.docId, oldNick = state.nick, newId = idFor(v);
+  state.nick = v; state.docId = newId;
+  var remote = state.docs[newId];
+  if(docHasAny(remote)){
+    applyMine(remote);
+    m.textContent = "找到「" + v + "」之前的投票，接着改就行。";
+  } else {
+    m.textContent = "好的，" + v + "，可以开始投了。";
+    saveNow();
+  }
+  if(oldId && oldId !== newId && state.docs[oldId]) clearOld(oldId, oldNick);
+  lsSet(); update();
+}
+$("namebtn").addEventListener("click", confirmName);
+$("myname").addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); confirmName(); } });
+
+/* ---------- interactions ---------- */
+document.addEventListener("click", function(ev){
+  var t = ev.target;
+  var b = t.closest ? t.closest(".vbtn") : null;
+  if(b){
+    if(!state.nick){ needName(); return; }
+    var id = b.parentNode.getAttribute("data-opt"), val = parseInt(b.getAttribute("data-v"),10);
+    if(state.votes[id] === val) delete state.votes[id]; else state.votes[id] = val;
+    update(); scheduleSave(); return;
+  }
+  var s = t.closest ? t.closest(".subtn") : null;
+  if(s){
+    if(!state.nick){ needName(); return; }
+    var sid = s.getAttribute("data-su");
+    if(state.signups[sid]) delete state.signups[sid]; else state.signups[sid] = true;
+    update(); scheduleSave(); return;
+  }
+});
+$("mynote").addEventListener("input", function(e){ state.note = e.target.value; if(!state.nick){ lsSet(); return; } scheduleSave(); });
+
+/* ---------- copy my picks ---------- */
+function buildCopy(){
+  var me = state.nick || "（没写名字）";
+  var yes = [], no = [];
+  OPT_ORDER.forEach(function(id){
+    var v = state.votes[id]; if(!v) return;
+    var d = DAY_OF[id], label = (d.md === "晚上" ? "晚上 " : d.md + " ") + OPT[id].short;
+    (v === 1 ? yes : no).push(label);
+  });
+  var sus = Object.keys(state.signups).filter(function(k){ return SU[k]; });
+  var lines = ["【波多黎各投票】" + me];
+  lines.push("想去：" + (yes.length ? yes.join("；") : "（没选）"));
+  if(no.length) lines.push("不想：" + no.join("；"));
+  if(sus.length) lines.push("报名：" + sus.map(function(k){ return SU[k].name; }).join("、"));
+  if(state.note.trim()) lines.push("留言：" + state.note.trim());
+  if(/^https?:/.test(location.href)) lines.push("还没投的来这里投：" + location.href.split("#")[0]);
+  return lines.join("\n");
+}
+$("copybtn").addEventListener("click", function(){
+  var text = buildCopy(), out = $("copyout"), msg = $("copymsg");
+  out.value = text; out.hidden = false;
+  function manual(){ msg.textContent = "没能自动复制，请长按下面的文字手动复制。"; try{ out.focus(); out.select(); }catch(e){} }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ msg.textContent = "已复制，去群里粘贴就行。"; }, manual);
+    } else { manual(); }
+  }catch(e){ manual(); }
+});
+
+/* ---------- boot ---------- */
+async function boot(){
+  $("myname").value = state.nick; $("mynote").value = state.note;
+  if(state.nick) $("namemsg").textContent = "你是「" + state.nick + "」。";
+  if(!FIREBASE_CONFIG.apiKey || /^PASTE/.test(FIREBASE_CONFIG.apiKey)){ setMode("unconfigured"); return; }
+  setMode("connecting");
+  try{
+    var base = "https://www.gstatic.com/firebasejs/" + FIREBASE_VERSION + "/";
+    var mods = await Promise.all([import(base + "firebase-app.js"), import(base + "firebase-firestore.js")]);
+    var app = mods[0].initializeApp(FIREBASE_CONFIG);
+    fs = mods[1]; fdb = fs.getFirestore(app);
+  }catch(e){ console.warn(e); setMode("error"); return; }
+  var first = true;
+  var timer = setTimeout(function(){ if(first) $("modehint").textContent = "暂时连不上数据库，选择先存在这台设备上。"; }, 10000);
+  fs.onSnapshot(fs.collection(fdb, "votes"), function(snap){
+    clearTimeout(timer);
+    var docs = {};
+    snap.forEach(function(d){ docs[d.id] = d.data(); });
+    state.docs = docs;
+    if(first){
+      first = false;
+      setMode("live");
+      if(state.docId){
+        var mine = docs[state.docId];
+        var localHas = Object.keys(state.votes).length || Object.keys(state.signups).length || state.note.trim();
+        if(docHasAny(mine)) applyMine(mine);
+        else if(localHas) saveNow();
+      }
+    } else if(state.docId && docs[state.docId] && !saveTimer && !saving){
+      applyMine(docs[state.docId]);
+    }
+    update();
+  }, function(err){
+    clearTimeout(timer);
+    setMode("error");
+    $("modehint").textContent = "连不上数据库（" + ((err && err.code) || "") + "），刷新页面再试。";
+  });
+}
+
+renderDays(); renderSignups(); renderMap(); update(); boot();
+</script>
+</body>
+</html>
